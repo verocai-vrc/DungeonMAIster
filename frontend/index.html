@@ -49,9 +49,16 @@
             
             <!-- ABA: FICHA -->
             <div id="tab-sheet" class="space-y-6">
+                <!-- Botões de Ação Ficha -->
+                <div class="flex gap-2">
+                    <button onclick="openEditModal(false)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded shadow text-sm font-semibold transition">Editar Ficha</button>
+                    <button onclick="openEditModal(true)" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded shadow text-sm font-semibold transition">Nova Ficha</button>
+                </div>
+
                 <div class="bg-gray-800 p-4 rounded border border-gray-700 shadow-sm">
                     <h2 class="text-xl font-bold text-blue-400" id="char-name">Desconhecido</h2>
-                    <p class="text-sm text-gray-400">Classe: <span id="char-class">-</span> | Nível: <span id="char-level">-</span></p>
+                    <p class="text-sm text-gray-400">Raça: <span id="char-race">-</span> | Classe: <span id="char-class">-</span> | Nível: <span id="char-level">-</span></p>
+                    <p class="text-sm text-gray-400 mt-1">📍 Local: <span id="char-location" class="text-yellow-400">-</span></p>
                 </div>
                 
                 <div class="flex gap-4 text-center">
@@ -71,6 +78,13 @@
                         <div class="text-gray-500 italic text-sm col-span-2">Por favor, carrega a ficha na aba Sistema.</div>
                     </div>
                 </div>
+
+                <div>
+                    <h3 class="font-bold border-b border-gray-700 pb-2 mt-6 mb-4 text-gray-300">Características e Habilidades</h3>
+                    <ul id="char-features" class="list-disc list-inside space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">
+                        <li class="text-gray-500 italic list-none">Vazio.</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- ABA: INVENTÁRIO -->
@@ -86,13 +100,73 @@
                 <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Conexões do Servidor</h3>
                 <button onclick="connectWS()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded font-medium transition shadow-sm">1. Conectar ao Mestre IA (WebSocket)</button>
                 <button onclick="loadCharacter()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded font-medium transition shadow-sm">2. Carregar Ficha (REST API)</button>
+                
+                <h3 class="font-bold border-b border-gray-700 pb-2 mt-6 mb-4 text-gray-300">Campanha</h3>
+                <input type="file" id="module-upload" accept="application/pdf" class="hidden" onchange="uploadModule(event)">
+                <button onclick="document.getElementById('module-upload').click()" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded font-medium transition shadow-sm flex justify-between items-center">
+                    <span>3. Carregar Módulo (PDF)</span> <span class="text-xl">📖</span>
+                </button>
             </div>
 
         </div>
     </div>
 
+    <!-- MODAL EDITAR/NOVA FICHA -->
+    <div id="char-modal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center z-50">
+        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 w-96 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <h2 class="text-xl font-bold text-blue-400 mb-4" id="modal-title">Editar Ficha</h2>
+            <div class="space-y-3 text-sm">
+                <div><label class="text-gray-400 block mb-1">Nome</label><input id="edit-name" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div class="flex gap-2">
+                    <div class="flex-1"><label class="text-gray-400 block mb-1">Raça</label>
+                        <select id="edit-race" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500">
+                            <option value="Humano">Humano</option>
+                            <option value="Elfo">Elfo</option>
+                            <option value="Anão">Anão</option>
+                            <option value="Halfling">Halfling</option>
+                        </select>
+                    </div>
+                    <div class="flex-1"><label class="text-gray-400 block mb-1">Classe</label>
+                        <select id="edit-class" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500">
+                            <option value="Bárbaro">Bárbaro</option>
+                            <option value="Guerreiro">Guerreiro</option>
+                            <option value="Ladino">Ladino</option>
+                            <option value="Mago">Mago</option>
+                            <option value="Clérigo">Clérigo</option>
+                        </select>
+                    </div>
+                    <div class="w-20"><label class="text-gray-400 block mb-1">Nível</label><input type="number" id="edit-level" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                </div>
+                <div><label class="text-gray-400 block mb-1">Localização</label><input id="edit-location" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                
+                <div class="flex gap-2 mt-4">
+                    <div class="flex-1"><label class="text-gray-400 block mb-1">HP Máx</label><input type="number" id="edit-max-hp" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="text-gray-400 block mb-1">HP Atual</label><input type="number" id="edit-current-hp" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="text-gray-400 block mb-1">CA</label><input type="number" id="edit-ac" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 mt-4">
+                    <div><label class="text-gray-400 block mb-1">FOR</label><input type="number" id="edit-str" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="text-gray-400 block mb-1">DES</label><input type="number" id="edit-dex" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="text-gray-400 block mb-1">CON</label><input type="number" id="edit-con" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="text-gray-400 block mb-1">INT</label><input type="number" id="edit-int" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="text-gray-400 block mb-1">SAB</label><input type="number" id="edit-wis" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="text-gray-400 block mb-1">CAR</label><input type="number" id="edit-cha" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                </div>
+
+                <div class="mt-4"><label class="text-gray-400 block mb-1">Inventário (separado por vírgula)</label><input id="edit-inventory" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div class="mt-4"><label class="text-gray-400 block mb-1">Habilidades (Automático ou Editável)</label><input id="edit-features" class="w-full bg-gray-700 text-gray-300 px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="saveCharacter()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold shadow transition">Salvar</button>
+                <button onclick="closeEditModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 rounded font-bold shadow transition">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let ws;
+        let currentCharacterData = null;
 
         // --- SISTEMA DE TABS ---
         function switchTab(tabId) {
@@ -150,11 +224,29 @@
             const isPlayer = sender === 'Jogador';
             const isSystem = sender === 'Sistema';
             
+            // Processar a tag oculta [REQUEST_ROLL:...] do Mestre IA
+            if (!isPlayer && !isSystem) {
+                const rollRegex = /\[REQUEST_ROLL:(.*?)\]/g;
+                text = text.replace(rollRegex, (match, expr) => {
+                    return `<div class="mt-4 border-t border-gray-700 pt-3"><button onclick="sendRoll('${expr}')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-bold shadow-md transition w-full flex justify-center items-center gap-2">🎲 Rolar Teste (${expr})</button></div>`;
+                });
+            }
+
             div.className = `p-3 rounded-lg w-max max-w-[85%] ${isPlayer ? 'bg-blue-900/40 text-blue-100 self-end ml-auto border border-blue-800/50' : (isSystem ? 'bg-gray-800 text-gray-400 self-center text-sm' : 'bg-gray-800 text-gray-200 self-start border border-gray-700')}`;
             div.innerHTML = `<span class="font-bold block text-xs opacity-75 mb-1 ${isPlayer ? 'text-blue-300' : (isSystem ? 'text-gray-500' : 'text-yellow-400')}">${sender}</span><span>${text}</span>`;
             
             history.appendChild(div);
             history.scrollTop = history.scrollHeight;
+        }
+
+        // --- ENVIO AUTOMÁTICO DE ROLAGEM ---
+        function sendRoll(expr) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                alert("Por favor, conecta-te ao Mestre IA primeiro.");
+                return;
+            }
+            const message = `/roll ${expr}`;
+            ws.send(message);
         }
 
         // --- FETCH DA FICHA (REST) ---
@@ -163,11 +255,14 @@
                 const response = await fetch("http://localhost:8000/api/character");
                 if (!response.ok) throw new Error("Erro de rede");
                 const data = await response.json();
+                currentCharacterData = data;
                 
                 // UI Básica
                 document.getElementById('char-name').textContent = data.name;
+                document.getElementById('char-race').textContent = data.race;
                 document.getElementById('char-class').textContent = data.character_class;
                 document.getElementById('char-level').textContent = data.level;
+                document.getElementById('char-location').textContent = data.location;
                 document.getElementById('char-hp').textContent = `${data.current_hp} / ${data.max_hp}`;
                 document.getElementById('char-ac').textContent = data.armor_class;
 
@@ -190,11 +285,164 @@
                 const invUl = document.getElementById('char-inventory');
                 invUl.innerHTML = data.inventory.map(item => `<li>${item}</li>`).join('');
 
+                // Características
+                const featsUl = document.getElementById('char-features');
+                featsUl.innerHTML = data.features.map(feat => `<li>${feat}</li>`).join('');
+                if(data.features.length === 0) featsUl.innerHTML = '<li class="text-gray-500 italic list-none">Nenhuma característica.</li>';
+
                 switchTab('sheet');
             } catch (error) {
                 console.error(error);
                 alert("Erro ao carregar a ficha. Verifica se o backend (FastAPI) está em execução.");
             }
+        }
+
+        // --- BASE DE DADOS AUTO-PREENCHIMENTO ---
+        const raceDB = {
+            "Humano": ["+1 em todos os Atributos", "Deslocamento 9m"],
+            "Elfo": ["Visão no Escuro", "Ancestralidade Feérica", "Transe"],
+            "Anão": ["Visão no Escuro", "Resiliência Anã", "Treinamento Anão"],
+            "Halfling": ["Sorte", "Bravura", "Agilidade Halfling"]
+        };
+
+        const classDB = {
+            "Bárbaro": { 1: ["Fúria", "Defesa sem Armadura"], 2: ["Ataque Temerário", "Sentido de Perigo"], 3: ["Caminho Primitivo"] },
+            "Guerreiro": { 1: ["Estilo de Luta", "Retomar o Fôlego"], 2: ["Surto de Ação"], 3: ["Arquétipo Marcial"] },
+            "Ladino": { 1: ["Ataque Furtivo", "Gíria de Ladrão", "Especialização"], 2: ["Ação Astuta"], 3: ["Arquétipo Rogino"] },
+            "Mago": { 1: ["Conjuração", "Recuperação Arcana"], 2: ["Tradição Arcana"], 3: ["Truques Adicionais"] },
+            "Clérigo": { 1: ["Conjuração", "Domínio Divino"], 2: ["Canalizar Divindade (1/descanso)"], 3: ["Magias de Domínio"] }
+        };
+
+        function updateAutoFeatures() {
+            const race = document.getElementById('edit-race').value;
+            const cls = document.getElementById('edit-class').value;
+            const lvl = parseInt(document.getElementById('edit-level').value) || 1;
+            
+            let autoFeats = [];
+            if (raceDB[race]) autoFeats.push(...raceDB[race]);
+            
+            if (classDB[cls]) {
+                for (let i = 1; i <= lvl; i++) {
+                    if (classDB[cls][i]) autoFeats.push(...classDB[cls][i]);
+                }
+            }
+            
+            // Se o nível for maior que 3 e não mapeado, avisar.
+            if (lvl > 3) autoFeats.push(`Mais habilidades da Classe ${cls} nível ${lvl}`);
+            
+            // Preenche o input text de forma amigável para o utilizador ajustar se quiser.
+            document.getElementById('edit-features').value = autoFeats.join(", ");
+        }
+
+        // --- MODAL DE FICHA (CRIAR / EDITAR) ---
+        function openEditModal(isNew) {
+            const modal = document.getElementById('char-modal');
+            const title = document.getElementById('modal-title');
+            
+            if (isNew || !currentCharacterData) {
+                title.textContent = "Nova Ficha de Personagem";
+                document.getElementById('edit-name').value = "";
+                document.getElementById('edit-race').value = "Humano";
+                document.getElementById('edit-class').value = "Guerreiro";
+                document.getElementById('edit-level').value = "1";
+                document.getElementById('edit-location').value = "Desconhecido";
+                document.getElementById('edit-max-hp').value = "10";
+                document.getElementById('edit-current-hp').value = "10";
+                document.getElementById('edit-ac').value = "10";
+                ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(attr => document.getElementById(`edit-${attr}`).value = "10");
+                document.getElementById('edit-inventory').value = "";
+                updateAutoFeatures(); // Gera as habilidades iniciais
+            } else {
+                title.textContent = "Editar Ficha de Personagem";
+                const d = currentCharacterData;
+                document.getElementById('edit-name').value = d.name;
+                document.getElementById('edit-race').value = d.race;
+                document.getElementById('edit-class').value = d.character_class;
+                document.getElementById('edit-level').value = d.level;
+                document.getElementById('edit-location').value = d.location;
+                document.getElementById('edit-max-hp').value = d.max_hp;
+                document.getElementById('edit-current-hp').value = d.current_hp;
+                document.getElementById('edit-ac').value = d.armor_class;
+                document.getElementById('edit-str').value = d.attributes.strength;
+                document.getElementById('edit-dex').value = d.attributes.dexterity;
+                document.getElementById('edit-con').value = d.attributes.constitution;
+                document.getElementById('edit-int').value = d.attributes.intelligence;
+                document.getElementById('edit-wis').value = d.attributes.wisdom;
+                document.getElementById('edit-cha').value = d.attributes.charisma;
+                document.getElementById('edit-inventory').value = d.inventory.join(", ");
+                document.getElementById('edit-features').value = d.features.join(", ");
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('char-modal').classList.add('hidden');
+        }
+
+        async function saveCharacter() {
+            const payload = {
+                name: document.getElementById('edit-name').value || "Herói Anônimo",
+                race: document.getElementById('edit-race').value || "Humano",
+                character_class: document.getElementById('edit-class').value || "Aventureiro",
+                level: parseInt(document.getElementById('edit-level').value) || 1,
+                location: document.getElementById('edit-location').value || "Desconhecido",
+                attributes: {
+                    strength: parseInt(document.getElementById('edit-str').value) || 10,
+                    dexterity: parseInt(document.getElementById('edit-dex').value) || 10,
+                    constitution: parseInt(document.getElementById('edit-con').value) || 10,
+                    intelligence: parseInt(document.getElementById('edit-int').value) || 10,
+                    wisdom: parseInt(document.getElementById('edit-wis').value) || 10,
+                    charisma: parseInt(document.getElementById('edit-cha').value) || 10
+                },
+                max_hp: parseInt(document.getElementById('edit-max-hp').value) || 10,
+                current_hp: parseInt(document.getElementById('edit-current-hp').value) || 10,
+                armor_class: parseInt(document.getElementById('edit-ac').value) || 10,
+                inventory: document.getElementById('edit-inventory').value.split(',').map(i => i.trim()).filter(i => i !== ''),
+                features: document.getElementById('edit-features').value.split(',').map(i => i.trim()).filter(i => i !== '')
+            };
+
+            try {
+                const response = await fetch("http://localhost:8000/api/character", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error("Falha ao salvar a ficha");
+                
+                closeEditModal();
+                loadCharacter(); // Recarrega os dados visuais automaticamente
+                appendMessage('Sistema', 'A ficha de personagem foi atualizada com sucesso!');
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao salvar a ficha. O servidor está ativo?");
+            }
+        }
+
+        // --- UPLOAD DE MÓDULO (PDF) ---
+        async function uploadModule(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            appendMessage('Sistema', 'A processar as páginas do módulo PDF... (Isto pode demorar alguns segundos).');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch("http://localhost:8000/api/upload_module", {
+                    method: "POST",
+                    body: formData
+                });
+                if (!response.ok) throw new Error("Falha ao enviar PDF");
+                
+                appendMessage('Sistema', `O módulo '${file.name}' foi memorizado pelo Mestre IA com sucesso! A aventura pode começar.`);
+            } catch (error) {
+                console.error(error);
+                appendMessage('Sistema', '<span class="text-red-400">Erro ao processar e carregar o módulo.</span>');
+            }
+            event.target.value = ''; // Reset do input
         }
     </script>
 </body>

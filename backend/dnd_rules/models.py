@@ -38,10 +38,13 @@ class Attributes(BaseModel):
 class CharacterSheet(BaseModel):
     """Modelo da Ficha Completa do Personagem."""
     name: str
+    race: str = Field(default="Humano", description="Raça do personagem")
     character_class: str
     level: int = Field(default=1, ge=1, le=20)
+    location: str = Field(default="Desconhecido", description="Localização atual do personagem")
     attributes: Attributes = Attributes()
     max_hp: int
     current_hp: int
     armor_class: int
     inventory: List[str] = []
+    features: List[str] = []
