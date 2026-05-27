@@ -1,0 +1,20 @@
+{
+    "spells_by_level": {
+        "1": [
+            "Mísseis Mágicos",
+            "Curar Ferimentos",
+            "Escudo Arcano"
+        ],
+        "2": [
+            "Passo Nebuloso",
+            "Arma Espiritual"
+        ]
+    },
+    "descriptions": {
+        "Mísseis Mágicos": "Crias três dardos mágicos brilhantes. Cada dardo atinge uma criatura e causa 1d4+1 de dano de energia.",
+        "Curar Ferimentos": "Uma criatura que você toca recupera pontos de vida iguais a 1d8 + seu modificador.",
+        "Escudo Arcano": "Uma barreira invisível aparece e protege você. Ganha +5 de bônus na CA até seu próximo turno.",
+        "Passo Nebuloso": "Você é cercado por névoa e teletransporta-se até 9 metros.",
+        "Arma Espiritual": "Você cria uma arma flutuante espectral que atinge uma criatura."
+    }
+}

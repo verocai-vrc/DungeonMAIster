@@ -41,6 +41,7 @@
         <div class="flex border-b border-gray-700 bg-gray-800">
             <button onclick="switchTab('sheet')" class="flex-1 py-3 text-center font-semibold focus:outline-none border-b-2 border-blue-500 text-blue-400" id="btn-sheet">Ficha</button>
             <button onclick="switchTab('inventory')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-inventory">Inventário</button>
+            <button onclick="switchTab('spells')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-spells">Magias</button>
             <button onclick="switchTab('system')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-system">Sistema</button>
         </div>
 
@@ -81,7 +82,7 @@
 
                 <div>
                     <h3 class="font-bold border-b border-gray-700 pb-2 mt-6 mb-4 text-gray-300">Características e Habilidades</h3>
-                    <ul id="char-features" class="list-disc list-inside space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">
+                    <ul id="char-features" class="space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">
                         <li class="text-gray-500 italic list-none">Vazio.</li>
                     </ul>
                 </div>
@@ -90,9 +91,17 @@
             <!-- ABA: INVENTÁRIO -->
             <div id="tab-inventory" class="hidden space-y-4">
                 <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Equipamento</h3>
-                <ul id="char-inventory" class="list-disc list-inside space-y-2 text-gray-300 bg-gray-800 p-4 rounded border border-gray-700">
+                <ul id="char-inventory" class="space-y-2 text-gray-300 bg-gray-800 p-4 rounded border border-gray-700">
                     <li class="text-gray-500 italic text-sm list-none">Vazio.</li>
                 </ul>
+            </div>
+
+            <!-- ABA: MAGIAS -->
+            <div id="tab-spells" class="hidden space-y-4">
+                <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Grimório (Magias Disponíveis)</h3>
+                <div id="spells-container" class="space-y-4">
+                    <div class="text-gray-500 italic text-sm">A carregar magias...</div>
+                </div>
             </div>
 
             <!-- ABA: SISTEMA -->
@@ -120,19 +129,10 @@
                 <div class="flex gap-2">
                     <div class="flex-1"><label class="text-gray-400 block mb-1">Raça</label>
                         <select id="edit-race" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500">
-                            <option value="Humano">Humano</option>
-                            <option value="Elfo">Elfo</option>
-                            <option value="Anão">Anão</option>
-                            <option value="Halfling">Halfling</option>
                         </select>
                     </div>
                     <div class="flex-1"><label class="text-gray-400 block mb-1">Classe</label>
                         <select id="edit-class" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500">
-                            <option value="Bárbaro">Bárbaro</option>
-                            <option value="Guerreiro">Guerreiro</option>
-                            <option value="Ladino">Ladino</option>
-                            <option value="Mago">Mago</option>
-                            <option value="Clérigo">Clérigo</option>
                         </select>
                     </div>
                     <div class="w-20"><label class="text-gray-400 block mb-1">Nível</label><input type="number" id="edit-level" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
@@ -147,14 +147,22 @@
 
                 <div class="grid grid-cols-3 gap-2 mt-4">
                     <div><label class="text-gray-400 block mb-1">FOR</label><input type="number" id="edit-str" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="text-gray-400 block mb-1">DES</label><input type="number" id="edit-dex" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="text-gray-400 block mb-1">CON</label><input type="number" id="edit-con" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="text-gray-400 block mb-1">DES</label><input type="number" id="edit-dex" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="text-gray-400 block mb-1">CON</label><input type="number" id="edit-con" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                     <div><label class="text-gray-400 block mb-1">INT</label><input type="number" id="edit-int" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                     <div><label class="text-gray-400 block mb-1">SAB</label><input type="number" id="edit-wis" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                     <div><label class="text-gray-400 block mb-1">CAR</label><input type="number" id="edit-cha" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 </div>
 
-                <div class="mt-4"><label class="text-gray-400 block mb-1">Inventário (separado por vírgula)</label><input id="edit-inventory" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div class="mt-4">
+                    <label class="text-gray-400 block mb-1">Inventário</label>
+                    <ul id="edit-inventory-list" class="bg-gray-900 p-2 rounded mb-2 space-y-1 text-gray-300 border border-gray-700 max-h-32 overflow-y-auto"></ul>
+                    <div class="flex gap-2">
+                        <select id="add-inventory-select" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></select>
+                        <button type="button" onclick="addInventoryItem()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow transition">+</button>
+                    </div>
+                </div>
+
                 <div class="mt-4"><label class="text-gray-400 block mb-1">Habilidades (Automático ou Editável)</label><input id="edit-features" class="w-full bg-gray-700 text-gray-300 px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
             </div>
             <div class="flex gap-3 mt-6">
@@ -167,10 +175,12 @@
     <script>
         let ws;
         let currentCharacterData = null;
+        let currentEditInventory = [];
+        let lastAppliedRace = null;
 
         // --- SISTEMA DE TABS ---
         function switchTab(tabId) {
-            ['sheet', 'inventory', 'system'].forEach(id => {
+            ['sheet', 'inventory', 'spells', 'system'].forEach(id => {
                 document.getElementById(`tab-${id}`).classList.add('hidden');
                 document.getElementById(`btn-${id}`).classList.remove('border-blue-500', 'text-blue-400');
                 document.getElementById(`btn-${id}`).classList.add('border-transparent', 'text-gray-400');
@@ -249,6 +259,38 @@
             ws.send(message);
         }
 
+        // --- FUNÇÃO PARA ROLAGEM RÁPIDA (CLIQUE NA FICHA) ---
+        function quickRoll(name, isAttribute = false, mod = 0) {
+            let expr = '1d20';
+            if (isAttribute) {
+                expr = `1d20${mod >= 0 ? '+' + mod : mod}`;
+            } else {
+                const desc = (dndRules && dndRules.descriptions && dndRules.descriptions[name]) ? dndRules.descriptions[name] : "";
+                // Procura na descrição por expressões de dados (ex: 1d8, 2d6+3, 1d4)
+                const match = desc.match(/(\d+d\d+(?:\s*[+-]\s*\d+)?)/);
+                expr = match ? match[1].replace(/\s/g, '') : '1d20';
+            }
+            
+            const input = document.getElementById('chat-input');
+            input.value = `/roll ${expr}`;
+            input.focus();
+        }
+
+        // --- FUNÇÃO PARA CRIAR TOOLTIPS VISUAIS ---
+        function renderTooltipItem(name) {
+            const desc = (dndRules && dndRules.descriptions && dndRules.descriptions[name]) 
+                ? dndRules.descriptions[name] 
+                : "Descrição não definida. Adicione este item ao bloco 'descriptions' do data/rules.json!";
+                
+            return `<li class="relative group w-max list-none mb-1">
+                <span onclick="quickRoll('${name.replace(/'/g, "\\'")}', false)" class="inline-flex items-center gap-2 cursor-pointer"><span class="text-blue-500 text-xs hover:text-blue-400">✦</span><span class="border-b border-dashed border-gray-500 hover:text-blue-300 transition">${name}</span></span>
+                <div class="absolute left-6 top-full mt-1 hidden group-hover:block w-64 bg-gray-950 text-gray-300 text-xs rounded p-3 shadow-xl border border-gray-700 z-[60] pointer-events-none">
+                    <strong class="text-blue-400 block mb-1 border-b border-gray-700 pb-1">${name}</strong>
+                    ${desc}
+                </div>
+            </li>`;
+        }
+
         // --- FETCH DA FICHA (REST) ---
         async function loadCharacter() {
             try {
@@ -278,16 +320,17 @@
                     { name: "CAR", val: data.attributes.charisma, mod: data.attributes.cha_mod }
                 ];
                 attrs.forEach(a => {
-                    attrDiv.innerHTML += `<div class="bg-gray-800 p-3 border border-gray-700 rounded flex justify-between items-center"><span class="font-bold text-gray-400">${a.name}</span><div class="text-right"><span class="text-xl font-semibold text-gray-200">${a.val}</span><span class="text-sm text-gray-500 ml-2">(${a.mod >= 0 ? '+'+a.mod : a.mod})</span></div></div>`;
+                    attrDiv.innerHTML += `<div onclick="quickRoll('${a.name}', true, ${a.mod})" class="bg-gray-800 p-3 border border-gray-700 rounded flex justify-between items-center cursor-pointer hover:bg-gray-700 transition" title="Rolar Teste de ${a.name}"><span class="font-bold text-gray-400 pointer-events-none">${a.name}</span><div class="text-right pointer-events-none"><span class="text-xl font-semibold text-gray-200">${a.val}</span><span class="text-sm text-gray-500 ml-2">(${a.mod >= 0 ? '+'+a.mod : a.mod})</span></div></div>`;
                 });
 
                 // Inventário
                 const invUl = document.getElementById('char-inventory');
-                invUl.innerHTML = data.inventory.map(item => `<li>${item}</li>`).join('');
+                invUl.innerHTML = data.inventory.map(item => renderTooltipItem(item)).join('');
+                if(data.inventory.length === 0) invUl.innerHTML = '<li class="text-gray-500 italic text-sm p-1 list-none">Vazio.</li>';
 
                 // Características
                 const featsUl = document.getElementById('char-features');
-                featsUl.innerHTML = data.features.map(feat => `<li>${feat}</li>`).join('');
+                featsUl.innerHTML = data.features.map(feat => renderTooltipItem(feat)).join('');
                 if(data.features.length === 0) featsUl.innerHTML = '<li class="text-gray-500 italic list-none">Nenhuma característica.</li>';
 
                 switchTab('sheet');
@@ -298,32 +341,123 @@
         }
 
         // --- BASE DE DADOS AUTO-PREENCHIMENTO ---
-        const raceDB = {
-            "Humano": ["+1 em todos os Atributos", "Deslocamento 9m"],
-            "Elfo": ["Visão no Escuro", "Ancestralidade Feérica", "Transe"],
-            "Anão": ["Visão no Escuro", "Resiliência Anã", "Treinamento Anão"],
-            "Halfling": ["Sorte", "Bravura", "Agilidade Halfling"]
-        };
+        let dndRules = null;
 
-        const classDB = {
-            "Bárbaro": { 1: ["Fúria", "Defesa sem Armadura"], 2: ["Ataque Temerário", "Sentido de Perigo"], 3: ["Caminho Primitivo"] },
-            "Guerreiro": { 1: ["Estilo de Luta", "Retomar o Fôlego"], 2: ["Surto de Ação"], 3: ["Arquétipo Marcial"] },
-            "Ladino": { 1: ["Ataque Furtivo", "Gíria de Ladrão", "Especialização"], 2: ["Ação Astuta"], 3: ["Arquétipo Rogino"] },
-            "Mago": { 1: ["Conjuração", "Recuperação Arcana"], 2: ["Tradição Arcana"], 3: ["Truques Adicionais"] },
-            "Clérigo": { 1: ["Conjuração", "Domínio Divino"], 2: ["Canalizar Divindade (1/descanso)"], 3: ["Magias de Domínio"] }
-        };
+        async function fetchRules() {
+            try {
+                const response = await fetch("http://localhost:8000/api/rules");
+                if (response.ok) {
+                    dndRules = await response.json();
+                    
+                    // Popula os dropdowns dinamicamente
+                    const raceSelect = document.getElementById('edit-race');
+                    const classSelect = document.getElementById('edit-class');
+                    
+                    Object.keys(dndRules.races).forEach(race => {
+                        raceSelect.add(new Option(race, race));
+                    });
+                    
+                    Object.keys(dndRules.classes).forEach(cls => {
+                        classSelect.add(new Option(cls, cls));
+                    });
+
+                    // Popula o select de inventário
+                    const inventorySelect = document.getElementById('add-inventory-select');
+                    if (dndRules.equipment && dndRules.equipment.length > 0) {
+                        dndRules.equipment.forEach(item => {
+                            inventorySelect.add(new Option(item, item));
+                        });
+                    }
+
+                    // Popula a aba de Magias
+                    const spellsContainer = document.getElementById('spells-container');
+                    spellsContainer.innerHTML = '';
+                    if (dndRules.spells && Object.keys(dndRules.spells).length > 0) {
+                        Object.keys(dndRules.spells).forEach(level => {
+                            const levelSpells = dndRules.spells[level];
+                            let html = `<div class="bg-gray-800 p-3 rounded border border-gray-700 shadow-sm">
+                                <h4 class="text-blue-400 font-bold mb-2">Círculo ${level}</h4>
+                                <ul class="text-gray-300 text-sm space-y-1">`;
+                            levelSpells.forEach(spell => {
+                                html += renderTooltipItem(spell);
+                            });
+                            html += `</ul></div>`;
+                            spellsContainer.innerHTML += html;
+                        });
+                    } else {
+                        spellsContainer.innerHTML = '<div class="text-gray-500 italic text-sm">Nenhuma magia encontrada nas regras.</div>';
+                    }
+                }
+            } catch (error) {
+                console.error("Erro ao carregar as regras:", error);
+            }
+        }
+        
+        // Inicializar na carga da página
+        window.addEventListener('DOMContentLoaded', fetchRules);
+
+        function updateInventoryUI() {
+            const list = document.getElementById('edit-inventory-list');
+            list.innerHTML = currentEditInventory.map((item, index) => 
+                `<li class="flex justify-between items-center bg-gray-800 p-1 px-2 rounded">
+                    <span>${item}</span>
+                    <button type="button" onclick="removeInventoryItem(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 text-lg leading-none">&times;</button>
+                </li>`
+            ).join('');
+            if (currentEditInventory.length === 0) list.innerHTML = '<li class="text-gray-500 italic text-sm p-1">Inventário vazio.</li>';
+        }
+
+        function addInventoryItem() {
+            const item = document.getElementById('add-inventory-select').value;
+            if (item) { currentEditInventory.push(item); updateInventoryUI(); updateAutoFeatures(); }
+        }
+
+        function removeInventoryItem(index) {
+            currentEditInventory.splice(index, 1); updateInventoryUI(); updateAutoFeatures();
+        }
 
         function updateAutoFeatures() {
+            if (!dndRules) return;
+
             const race = document.getElementById('edit-race').value;
             const cls = document.getElementById('edit-class').value;
             const lvl = parseInt(document.getElementById('edit-level').value) || 1;
             
-            let autoFeats = [];
-            if (raceDB[race]) autoFeats.push(...raceDB[race]);
+            const attrKeys = { "strength": "str", "dexterity": "dex", "constitution": "con", "intelligence": "int", "wisdom": "wis", "charisma": "cha" };
             
-            if (classDB[cls]) {
-                for (let i = 1; i <= lvl; i++) {
-                    if (classDB[cls][i]) autoFeats.push(...classDB[cls][i]);
+            let autoFeats = [];
+            
+            // Aplicação Automática de Bónus de Atributos da Raça
+            const raceData = dndRules.races[race];
+            if (raceData) {
+                if (lastAppliedRace !== race) {
+                    // Remove bónus da raça anterior (se existir)
+                    if (lastAppliedRace && dndRules.races[lastAppliedRace] && dndRules.races[lastAppliedRace].attributes) {
+                        const oldBonuses = dndRules.races[lastAppliedRace].attributes;
+                        Object.keys(oldBonuses).forEach(k => {
+                            const inp = document.getElementById(`edit-${attrKeys[k]}`);
+                            if (inp) inp.value = parseInt(inp.value) - oldBonuses[k];
+                        });
+                    }
+                    // Adiciona os bónus da nova raça
+                    if (raceData.attributes) {
+                        Object.keys(raceData.attributes).forEach(k => {
+                            const inp = document.getElementById(`edit-${attrKeys[k]}`);
+                            if (inp) inp.value = parseInt(inp.value) + raceData.attributes[k];
+                        });
+                    }
+                    lastAppliedRace = race;
+                }
+                if (raceData.features) autoFeats.push(...raceData.features);
+            }
+            
+            const classData = dndRules.classes[cls];
+            if (classData) {
+                if (classData.proficiencies) autoFeats.push(`Perícias: ${classData.proficiencies.join(", ")}`);
+                if (classData.features) {
+                    for (let i = 1; i <= lvl; i++) {
+                        if (classData.features[i]) autoFeats.push(...classData.features[i]);
+                    }
                 }
             }
             
@@ -332,6 +466,55 @@
             
             // Preenche o input text de forma amigável para o utilizador ajustar se quiser.
             document.getElementById('edit-features').value = autoFeats.join(", ");
+
+            // Agora que os atributos foram potencialmente atualizados pela Raça, lemos os valores para os cálculos
+            const con = parseInt(document.getElementById('edit-con').value) || 10;
+            
+            // --- CÁLCULO DE HP MÁXIMO AUTOMÁTICO ---
+            const conMod = Math.floor((con - 10) / 2);
+            const hitDie = classData ? classData.hit_dice : 8; // d8 por defeito se a classe não estiver mapeada
+            
+            let maxHp = hitDie + conMod; // Nível 1 sempre recebe o valor máximo do dado
+            if (lvl > 1) {
+                const avgHitDie = Math.floor(hitDie / 2) + 1; // Ex: d10 -> 6, d6 -> 4
+                maxHp += (lvl - 1) * Math.max(1, (avgHitDie + conMod)); // Garante o mínimo de +1 HP por nível
+            }
+
+            document.getElementById('edit-max-hp').value = maxHp;
+            
+            // Ajusta o HP Atual para não ficar acima do Máximo ou se estiver com o valor por defeito inicial
+            const currentHpInput = document.getElementById('edit-current-hp');
+            if (parseInt(currentHpInput.value) > maxHp || currentHpInput.value === "10") {
+                currentHpInput.value = maxHp;
+            }
+
+            // --- CÁLCULO DE CA (CLASSE DE ARMADURA) AUTOMÁTICO ---
+            const dex = parseInt(document.getElementById('edit-dex').value) || 10;
+            const dexMod = Math.floor((dex - 10) / 2);
+            let baseAC = 10 + dexMod;
+            let bestArmorAC = 0;
+            let hasShield = false;
+
+            if (dndRules.armor) {
+                currentEditInventory.forEach(item => {
+                    const armorData = dndRules.armor[item];
+                    if (armorData) {
+                        if (armorData.type === 'shield') {
+                            hasShield = true;
+                        } else {
+                            let calcAC = armorData.base;
+                            if (armorData.type === 'light') calcAC += dexMod;
+                            else if (armorData.type === 'medium') calcAC += Math.min(dexMod, 2);
+                            // Armaduras pesadas usam apenas o baseAC (já definido)
+                            if (calcAC > bestArmorAC) bestArmorAC = calcAC;
+                        }
+                    }
+                });
+            }
+
+            let finalAC = bestArmorAC > 0 ? bestArmorAC : baseAC;
+            if (hasShield) finalAC += 2;
+            document.getElementById('edit-ac').value = finalAC;
         }
 
         // --- MODAL DE FICHA (CRIAR / EDITAR) ---
@@ -342,15 +525,17 @@
             if (isNew || !currentCharacterData) {
                 title.textContent = "Nova Ficha de Personagem";
                 document.getElementById('edit-name').value = "";
-                document.getElementById('edit-race').value = "Humano";
-                document.getElementById('edit-class').value = "Guerreiro";
+                document.getElementById('edit-race').selectedIndex = 0;
+                document.getElementById('edit-class').selectedIndex = 0;
                 document.getElementById('edit-level').value = "1";
                 document.getElementById('edit-location').value = "Desconhecido";
                 document.getElementById('edit-max-hp').value = "10";
                 document.getElementById('edit-current-hp').value = "10";
                 document.getElementById('edit-ac').value = "10";
                 ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(attr => document.getElementById(`edit-${attr}`).value = "10");
-                document.getElementById('edit-inventory').value = "";
+                currentEditInventory = [];
+                updateInventoryUI();
+                lastAppliedRace = null;
                 updateAutoFeatures(); // Gera as habilidades iniciais
             } else {
                 title.textContent = "Editar Ficha de Personagem";
@@ -369,7 +554,9 @@
                 document.getElementById('edit-int').value = d.attributes.intelligence;
                 document.getElementById('edit-wis').value = d.attributes.wisdom;
                 document.getElementById('edit-cha').value = d.attributes.charisma;
-                document.getElementById('edit-inventory').value = d.inventory.join(", ");
+                currentEditInventory = [...d.inventory];
+                updateInventoryUI();
+                lastAppliedRace = d.race; // Guarda a raça atual para evitar adicionar os bónus de novo
                 document.getElementById('edit-features').value = d.features.join(", ");
             }
             
@@ -398,7 +585,7 @@
                 max_hp: parseInt(document.getElementById('edit-max-hp').value) || 10,
                 current_hp: parseInt(document.getElementById('edit-current-hp').value) || 10,
                 armor_class: parseInt(document.getElementById('edit-ac').value) || 10,
-                inventory: document.getElementById('edit-inventory').value.split(',').map(i => i.trim()).filter(i => i !== ''),
+                inventory: currentEditInventory,
                 features: document.getElementById('edit-features').value.split(',').map(i => i.trim()).filter(i => i !== '')
             };
 

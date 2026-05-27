@@ -1,0 +1,125 @@
+{
+    "classes": {
+        "Bárbaro": {
+            "hit_dice": 12,
+            "proficiencies": [
+                "Atletismo",
+                "Intimidação"
+            ],
+            "features": {
+                "1": [
+                    "Fúria",
+                    "Defesa sem Armadura"
+                ],
+                "2": [
+                    "Ataque Temerário",
+                    "Sentido de Perigo"
+                ],
+                "3": [
+                    "Caminho Primitivo"
+                ]
+            }
+        },
+        "Guerreiro": {
+            "hit_dice": 10,
+            "proficiencies": [
+                "Acrobacia",
+                "Sobrevivência"
+            ],
+            "features": {
+                "1": [
+                    "Estilo de Luta",
+                    "Retomar o Fôlego"
+                ],
+                "2": [
+                    "Surto de Ação"
+                ],
+                "3": [
+                    "Arquétipo Marcial"
+                ]
+            }
+        },
+        "Ladino": {
+            "hit_dice": 8,
+            "proficiencies": [
+                "Furtividade",
+                "Prestidigitação",
+                "Enganação"
+            ],
+            "features": {
+                "1": [
+                    "Ataque Furtivo",
+                    "Gíria de Ladrão",
+                    "Especialização"
+                ],
+                "2": [
+                    "Ação Astuta"
+                ],
+                "3": [
+                    "Arquétipo Rogino"
+                ]
+            }
+        },
+        "Mago": {
+            "hit_dice": 6,
+            "proficiencies": [
+                "Arcanismo",
+                "História"
+            ],
+            "features": {
+                "1": [
+                    "Conjuração",
+                    "Recuperação Arcana"
+                ],
+                "2": [
+                    "Tradição Arcana"
+                ],
+                "3": [
+                    "Truques Adicionais"
+                ]
+            }
+        },
+        "Clérigo": {
+            "hit_dice": 8,
+            "proficiencies": [
+                "Religião",
+                "Medicina"
+            ],
+            "features": {
+                "1": [
+                    "Conjuração",
+                    "Domínio Divino"
+                ],
+                "2": [
+                    "Canalizar Divindade (1/descanso)"
+                ],
+                "3": [
+                    "Magias de Domínio"
+                ]
+            }
+        },
+        "Feiticeiro": {
+            "hit_dice": 6,
+            "proficiencies": [
+                "Arcanismo",
+                "Enganação"
+            ],
+            "features": {
+                "1": [
+                    "Conjuração",
+                    "Origem Feiticeira"
+                ],
+                "2": [
+                    "Fonte de Magia"
+                ],
+                "3": [
+                    "Metamágica"
+                ]
+            }
+        }
+    },
+    "descriptions": {
+        "Fúria": "Em batalha, você luta com ferocidade primitiva. No seu turno, você pode entrar em fúria como uma ação bônus, ganhando vantagem em Força e resistência a dano físico.",
+        "Defesa sem Armadura": "Enquanto não usar armadura, CA = 10 + Mod DES + Mod CON."
+    }
+}

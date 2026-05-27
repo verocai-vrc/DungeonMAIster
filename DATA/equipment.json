@@ -1,0 +1,58 @@
+{
+    "items": [
+        "Adaga",
+        "Arco Curto",
+        "Arco Longo",
+        "Besta Leve",
+        "Besta Pesada",
+        "Espada Curta",
+        "Espada Longa",
+        "Machado de Batalha",
+        "Machado Grande",
+        "Maça",
+        "Martelo de Guerra",
+        "Rapieira",
+        "Armadura de Couro",
+        "Cota de Malha",
+        "Brunea",
+        "Placas",
+        "Escudo",
+        "Poção de Cura",
+        "Corda (15m)",
+        "Tocha",
+        "Mochila do Aventureiro",
+        "Rações (1 dia)"
+    ],
+    "armor": {
+        "Armadura de Couro": {
+            "type": "light",
+            "base": 11
+        },
+        "Brunea": {
+            "type": "medium",
+            "base": 14
+        },
+        "Cota de Malha": {
+            "type": "heavy",
+            "base": 16
+        },
+        "Placas": {
+            "type": "heavy",
+            "base": 18
+        },
+        "Escudo": {
+            "type": "shield",
+            "bonus": 2
+        }
+    },
+    "descriptions": {
+        "Machado Grande": "Machado de um lenhador qualquer... ou de um guerreiro furioso. 1d12 de dano cortante. Pesado, duas mãos.",
+        "Adaga": "Arma corpo-a-corpo simples. 1d4 de dano perfurante. Acuidade, leve, arremesso (distância 6/18m).",
+        "Poção de Cura": "Um personagem que beber o líquido vermelho deste frasco recupera 2d4+2 pontos de vida.",
+        "Armadura de Couro": "Armadura leve. CA 11 + Modificador de Destreza.",
+        "Brunea": "Armadura média (escamas). CA 14 + Modificador de Destreza (máx 2). Desvantagem em Furtividade.",
+        "Cota de Malha": "Armadura pesada. CA 16. Requer For 13. Desvantagem em Furtividade.",
+        "Placas": "Armadura pesada. CA 18. Requer For 15. Desvantagem em Furtividade.",
+        "Escudo": "Concede +2 na sua Classe de Armadura."
+    }
+}

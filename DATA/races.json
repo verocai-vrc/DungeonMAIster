@@ -1,0 +1,62 @@
+{
+    "races": {
+        "Humano": {
+            "attributes": {
+                "strength": 1,
+                "dexterity": 1,
+                "constitution": 1,
+                "intelligence": 1,
+                "wisdom": 1,
+                "charisma": 1
+            },
+            "features": [
+                "Deslocamento 9m"
+            ]
+        },
+        "Elfo": {
+            "attributes": {
+                "dexterity": 2
+            },
+            "features": [
+                "Visão no Escuro",
+                "Ancestralidade Feérica",
+                "Transe"
+            ]
+        },
+        "Anão": {
+            "attributes": {
+                "constitution": 2
+            },
+            "features": [
+                "Visão no Escuro",
+                "Resiliência Anã",
+                "Treinamento Anão"
+            ]
+        },
+        "Halfling": {
+            "attributes": {
+                "dexterity": 2
+            },
+            "features": [
+                "Sorte",
+                "Bravura",
+                "Agilidade Halfling"
+            ]
+        },
+        "Orc": {
+            "attributes": {
+                "strength": 2,
+                "constitution": 1
+            },
+            "features": [
+                "Visão no Escuro",
+                "Ataque Selvagem",
+                "Resistência Implacável"
+            ]
+        }
+    },
+    "descriptions": {
+        "Ataque Selvagem": "Acertos críticos causam dano extra massivo.",
+        "Resistência Implacável": "Quando cai para 0 HP, pode escolher cair para 1 HP em vez disso (1/descanso longo)."
+    }
+}
