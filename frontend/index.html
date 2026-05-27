@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DungeonMAIster - Solo RPG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Personalização simples da barra de scroll para ambiente Dark Mode */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden font-sans">
+
+    <!-- PAINEL ESQUERDO: MUNDO (CHAT) - 65% -->
+    <div class="w-[65%] flex flex-col border-r border-gray-700">
+        <!-- Header Chat -->
+        <div class="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-blue-400">O Mundo (Chat)</h1>
+            <span id="ws-status" class="text-sm text-red-400">Desconectado</span>
+        </div>
+
+        <!-- Histórico do Chat -->
+        <div id="chat-history" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-950 flex flex-col">
+            <div class="text-gray-500 italic text-center my-4">A tua aventura começa aqui...</div>
+        </div>
+
+        <!-- Input de Ação -->
+        <div class="p-4 bg-gray-800 border-t border-gray-700 flex gap-2">
+            <input type="text" id="chat-input" class="flex-1 bg-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Descreve a tua ação..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold transition shadow">Enviar</button>
+        </div>
+    </div>
+
+    <!-- PAINEL DIREITO: MECÂNICA (FICHA) - 35% -->
+    <div class="w-[35%] flex flex-col bg-gray-900">
+        <!-- Tabs de Navegação -->
+        <div class="flex border-b border-gray-700 bg-gray-800">
+            <button onclick="switchTab('sheet')" class="flex-1 py-3 text-center font-semibold focus:outline-none border-b-2 border-blue-500 text-blue-400" id="btn-sheet">Ficha</button>
+            <button onclick="switchTab('inventory')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-inventory">Inventário</button>
+            <button onclick="switchTab('system')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-system">Sistema</button>
+        </div>
+
+        <!-- Conteúdo das Tabs -->
+        <div class="flex-1 overflow-y-auto p-5">
+            
+            <!-- ABA: FICHA -->
+            <div id="tab-sheet" class="space-y-6">
+                <div class="bg-gray-800 p-4 rounded border border-gray-700 shadow-sm">
+                    <h2 class="text-xl font-bold text-blue-400" id="char-name">Desconhecido</h2>
+                    <p class="text-sm text-gray-400">Classe: <span id="char-class">-</span> | Nível: <span id="char-level">-</span></p>
+                </div>
+                
+                <div class="flex gap-4 text-center">
+                    <div class="flex-1 bg-red-900/30 border border-red-800/50 p-3 rounded shadow-sm">
+                        <div class="text-xs text-red-400 uppercase font-bold tracking-wider">Pontos de Vida</div>
+                        <div class="text-2xl font-bold mt-1" id="char-hp">- / -</div>
+                    </div>
+                    <div class="flex-1 bg-blue-900/30 border border-blue-800/50 p-3 rounded shadow-sm">
+                        <div class="text-xs text-blue-400 uppercase font-bold tracking-wider">Classe de Armadura</div>
+                        <div class="text-2xl font-bold mt-1" id="char-ac">-</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Atributos</h3>
+                    <div class="grid grid-cols-2 gap-3" id="char-attributes">
+                        <div class="text-gray-500 italic text-sm col-span-2">Por favor, carrega a ficha na aba Sistema.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA: INVENTÁRIO -->
+            <div id="tab-inventory" class="hidden space-y-4">
+                <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Equipamento</h3>
+                <ul id="char-inventory" class="list-disc list-inside space-y-2 text-gray-300 bg-gray-800 p-4 rounded border border-gray-700">
+                    <li class="text-gray-500 italic text-sm list-none">Vazio.</li>
+                </ul>
+            </div>
+
+            <!-- ABA: SISTEMA -->
+            <div id="tab-system" class="hidden space-y-4">
+                <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Conexões do Servidor</h3>
+                <button onclick="connectWS()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded font-medium transition shadow-sm">1. Conectar ao Mestre IA (WebSocket)</button>
+                <button onclick="loadCharacter()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded font-medium transition shadow-sm">2. Carregar Ficha (REST API)</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let ws;
+
+        // --- SISTEMA DE TABS ---
+        function switchTab(tabId) {
+            ['sheet', 'inventory', 'system'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                document.getElementById(`btn-${id}`).classList.remove('border-blue-500', 'text-blue-400');
+                document.getElementById(`btn-${id}`).classList.add('border-transparent', 'text-gray-400');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).classList.add('border-blue-500', 'text-blue-400');
+            document.getElementById(`btn-${tabId}`).classList.remove('border-transparent', 'text-gray-400');
+        }
+
+        // --- WEBSOCKETS (CHAT) ---
+        function connectWS() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                appendMessage('Sistema', 'Já estás conectado ao servidor.');
+                return;
+            }
+            
+            ws = new WebSocket("ws://localhost:8000/ws");
+            ws.onopen = () => {
+                document.getElementById('ws-status').textContent = 'Conectado';
+                document.getElementById('ws-status').className = 'text-sm text-green-400 font-bold';
+                appendMessage('Sistema', 'Conexão estabelecida com o servidor DungeonMAIster.');
+            };
+            ws.onmessage = (event) => appendMessage('Mestre', event.data);
+            ws.onclose = () => {
+                document.getElementById('ws-status').textContent = 'Desconectado';
+                document.getElementById('ws-status').className = 'text-sm text-red-400 font-bold';
+                appendMessage('Sistema', 'A conexão com o servidor foi perdida.');
+            };
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                alert("Por favor, conecta-te ao Mestre IA primeiro na aba 'Sistema'.");
+                return;
+            }
+            
+            appendMessage('Jogador', message);
+            ws.send(message);
+            input.value = '';
+        }
+
+        function handleKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
+
+        function appendMessage(sender, text) {
+            const history = document.getElementById('chat-history');
+            const div = document.createElement('div');
+            const isPlayer = sender === 'Jogador';
+            const isSystem = sender === 'Sistema';
+            
+            div.className = `p-3 rounded-lg w-max max-w-[85%] ${isPlayer ? 'bg-blue-900/40 text-blue-100 self-end ml-auto border border-blue-800/50' : (isSystem ? 'bg-gray-800 text-gray-400 self-center text-sm' : 'bg-gray-800 text-gray-200 self-start border border-gray-700')}`;
+            div.innerHTML = `<span class="font-bold block text-xs opacity-75 mb-1 ${isPlayer ? 'text-blue-300' : (isSystem ? 'text-gray-500' : 'text-yellow-400')}">${sender}</span><span>${text}</span>`;
+            
+            history.appendChild(div);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        // --- FETCH DA FICHA (REST) ---
+        async function loadCharacter() {
+            try {
+                const response = await fetch("http://localhost:8000/api/character");
+                if (!response.ok) throw new Error("Erro de rede");
+                const data = await response.json();
+                
+                // UI Básica
+                document.getElementById('char-name').textContent = data.name;
+                document.getElementById('char-class').textContent = data.character_class;
+                document.getElementById('char-level').textContent = data.level;
+                document.getElementById('char-hp').textContent = `${data.current_hp} / ${data.max_hp}`;
+                document.getElementById('char-ac').textContent = data.armor_class;
+
+                // Atributos
+                const attrDiv = document.getElementById('char-attributes');
+                attrDiv.innerHTML = ''; 
+                const attrs = [
+                    { name: "FOR", val: data.attributes.strength, mod: data.attributes.str_mod },
+                    { name: "DES", val: data.attributes.dexterity, mod: data.attributes.dex_mod },
+                    { name: "CON", val: data.attributes.constitution, mod: data.attributes.con_mod },
+                    { name: "INT", val: data.attributes.intelligence, mod: data.attributes.int_mod },
+                    { name: "SAB", val: data.attributes.wisdom, mod: data.attributes.wis_mod },
+                    { name: "CAR", val: data.attributes.charisma, mod: data.attributes.cha_mod }
+                ];
+                attrs.forEach(a => {
+                    attrDiv.innerHTML += `<div class="bg-gray-800 p-3 border border-gray-700 rounded flex justify-between items-center"><span class="font-bold text-gray-400">${a.name}</span><div class="text-right"><span class="text-xl font-semibold text-gray-200">${a.val}</span><span class="text-sm text-gray-500 ml-2">(${a.mod >= 0 ? '+'+a.mod : a.mod})</span></div></div>`;
+                });
+
+                // Inventário
+                const invUl = document.getElementById('char-inventory');
+                invUl.innerHTML = data.inventory.map(item => `<li>${item}</li>`).join('');
+
+                switchTab('sheet');
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao carregar a ficha. Verifica se o backend (FastAPI) está em execução.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -2,3 +2,8 @@ fastapi
 uvicorn
 websockets
 pydantic
+langchain
+langchain-community
+chromadb
+pypdf
+sentence-transformers
