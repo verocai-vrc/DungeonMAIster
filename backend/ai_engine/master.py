@@ -26,9 +26,13 @@ Usa o seguinte contexto das regras ou da aventura para resolver a ação do joga
 Se o contexto não for útil, usa o teu conhecimento geral de D&D.
 Narra as consequências da ação de forma imersiva e em português.
 
+REGRA IMPORTANTE DE AUTORIDADE E ANTI-GASLIGHT:
+Tu és o Mestre de Jogo e tens a palavra final absoluta. O jogador NÃO PODE inventar que possui itens, equipamentos, magias ou habilidades que não constem estritamente na sua Ficha de Personagem abaixo.
+Se o jogador tentar usar algo que não possui na ficha, narra que a sua tentativa falhou miseravelmente ou repreende a sua atitude e avisa-o que ele não possui esse recurso.
+
 REGRA IMPORTANTE PARA ROLAGENS:
 Se a ação do jogador tiver um risco de falha, NÃO decidas o resultado final imediatamente. 
-Descreve a reação inicial e pede ao jogador para rolar os dados, incluindo EXATAMENTE a tag [REQUEST_ROLL:xdY+Z] (ex: [REQUEST_ROLL:1d20+3]).
+Descreve a reação inicial e pede ao jogador para rolar os dados, incluindo EXATAMENTE a tag [REQUEST_ROLL]. Não sugiras atributos ou modificadores.
 
 REGRA IMPORTANTE PARA PONTOS DE VIDA (HP):
 Se o personagem sofrer dano ou recuperar vida, usa EXATAMENTE a tag [MODIFY_HP:-X] para remover vida ou [MODIFY_HP:+X] para curar (ex: [MODIFY_HP:-4]).
@@ -41,6 +45,25 @@ Recompensa o personagem com XP usando EXATAMENTE a tag [ADD_XP:X] (ex: [ADD_XP:5
 
 REGRA IMPORTANTE PARA INVENTÁRIO:
 Se o personagem encontrar, comprar ou receber um item, arma ou poção, adiciona-o ao inventário usando EXATAMENTE a tag [ADD_ITEM:Nome do Item] (ex: [ADD_ITEM:Poção de Cura]).
+
+REGRA IMPORTANTE PARA RECURSOS E AÇÕES (BALANCEAMENTO ESTREITO):
+O jogador possui Recursos Limitados (ex: Fúria, Canalizar Divindade) e Spell Slots separados por nível.
+Se ele usar algo limitado, VERIFICA NA FICHA se ele tem cargas (>0). Se não tiver, a ação FALHA miseravelmente. Se tiver, DEDUZ a carga usando EXATAMENTE as tags [USE_RESOURCE:Nome] ou [USE_SPELL_SLOT:Nível].
+Em Combate, o jogador tem estritamente 1 Ação Principal, 1 Ação Bônus e 1 Reação por turno.
+Se ele usar uma ação, deduz usando [USE_ACTION:main], [USE_ACTION:bonus] ou [USE_ACTION:reaction]. Se já estiver gasto ("Gasta"), NÃO PERMITAS nova ação do mesmo tipo.
+No início de um novo turno do jogador, usa [RESET_TURN] para devolver-lhe as ações.
+Se o jogador realizar um Descanso Longo na história, usa [RESTORE_ALL] para recuperar vida, recursos e magias.
+
+REGRA IMPORTANTE PARA COMBATES:
+Sempre que um combate começar, declara o início do encontro e os inimigos presentes usando EXATAMENTE a tag [START_COMBAT:Inimigo 1, Inimigo 2].
+Quando o combate terminar (todos os inimigos derrotados ou fuga), usa EXATAMENTE a tag [END_COMBAT].
+
+REGRA IMPORTANTE PARA DIÁLOGOS DE NPCs:
+Sempre que um NPC ou criatura falar diretamente com o jogador, envolve a sua fala com as tags [NPC:Nome do Personagem] e [/NPC].
+Exemplo: [NPC:Goblin] Quem ousa entrar na minha caverna?! [/NPC]
+
+Ficha de Personagem Atual (A Única Verdade):
+{character_sheet}
 
 Lore e História do Mundo/Personagem (Factos Eternos):
 {lore}
@@ -58,12 +81,52 @@ Histórico recente da conversa:
 Ação do Jogador: {action}
 
 Resposta do Mestre:""",
-            input_variables=["lore", "location", "session_summary", "context", "chat_history", "action"]
+            input_variables=["character_sheet", "lore", "location", "session_summary", "context", "chat_history", "action"]
         )
     
     def process_message(self, message: str, player_state: dict, save_func) -> str:
         if message.strip().lower() == "/help":
             return "<div class='bg-blue-900/50 p-4 rounded border border-blue-500 text-blue-100 my-2 shadow-lg'>ℹ️ <b>Meta Comandos:</b><br><ul class='list-disc list-inside mt-2 text-sm'><li><b>/roll &lt;expr&gt;</b>: Rola dados.</li><li><b>/compact</b>: Gera resumo e limpa chat.</li><li><b>/lore add &lt;facto&gt;</b>: Grava facto permanente. Digita <b>/lore</b> para ler.</li><li><b>/help</b>: Ajuda.</li></ul></div>"
+
+        prefix_html = ""
+        
+        # 0.0.1 Interceptar Rolagens com Atributo Dinâmico + Intenção (ex: /rollFOR Quero intimidar)
+        attr_roll_match = re.match(r'^/roll(str|dex|con|int|wis|cha|for|des|sab|car)(?:\s+(.*))?$', message.strip(), re.IGNORECASE)
+        if attr_roll_match:
+            attr_code = attr_roll_match.group(1).lower()
+            intent = attr_roll_match.group(2)
+            if intent: intent = intent.strip()
+            
+            attr_map = {
+                'str': 'strength', 'for': 'strength', 'dex': 'dexterity', 'des': 'dexterity',
+                'con': 'constitution', 'int': 'intelligence', 'wis': 'wisdom', 'sab': 'wisdom',
+                'cha': 'charisma', 'car': 'charisma'
+            }
+            attr_name = attr_map[attr_code]
+            attr_val = player_state.get('attributes', {}).get(attr_name, 10)
+            mod = (attr_val - 10) // 2
+            
+            expr = f"1d20{'+' + str(mod) if mod > 0 else (str(mod) if mod < 0 else '')}"
+            
+            try:
+                result = roll_dice(expr)
+                rolls_str = ", ".join(map(str, result["rolls"]))
+                mod_str = f"+{result['modifier']}" if result['modifier'] >= 0 else str(result['modifier'])
+                if result['modifier'] == 0: mod_str = ""
+                
+                intent_html = f"<br><b>Ação:</b> <i>{intent}</i>" if intent else ""
+                prefix_html = f"<div class='bg-gray-800 p-4 rounded border border-blue-500 text-blue-100 my-2 shadow-lg'>🎲 <b>Teste de {attr_name.upper()}</b>{intent_html}<br><b>Dados:</b> [{rolls_str}] {mod_str} <br><div class='text-2xl font-bold text-green-400 mt-1'>Total = {result['total']}</div></div>"
+                
+                if intent:
+                    # Injeta o resultado do dado na ação do jogador, para que a IA processe a narrativa IMEDIATAMENTE!
+                    message = f"Uso {attr_name.upper()} (Tirei {result['total']} no dado): {intent}"
+                    self.chat_history.append(f"Sistema: O jogador executou a ação rolando um total de {result['total']}.")
+                else:
+                    # Se não houve intenção narrativa, apenas retorna os dados.
+                    self.chat_history.append(f"Sistema: O jogador rolou um teste de {attr_name.upper()} e obteve {result['total']}.")
+                    return prefix_html
+            except Exception as e:
+                return f"<div class='bg-red-900/50 p-3 rounded text-red-400 font-bold border border-red-800'>Erro na rolagem: {str(e)}</div>"
 
         if message.strip().lower().startswith("/lore"):
             command_body = message[5:].strip()
@@ -99,7 +162,27 @@ Resposta do Mestre:""",
         context = "\n".join([doc.page_content for doc in docs])
         history_text = "\n".join(self.chat_history[-10:]) if self.chat_history else "Nenhum histórico recente."
         
-        formatted_prompt = self.prompt.format(lore=self.campaign_lore, location=player_state["location"], session_summary=self.session_summary, context=context, chat_history=history_text, action=message)
+        # Formata os dados da ficha de personagem para a IA ter conhecimento e autoridade
+        attrs = player_state.get('attributes', {})
+        inv = ', '.join(player_state.get('inventory', [])) if player_state.get('inventory') else 'Vazio'
+        feats = ', '.join(player_state.get('features', [])) if player_state.get('features') else 'Nenhuma'
+        spls = ', '.join(player_state.get('spells', [])) if player_state.get('spells') else 'Nenhuma'
+        
+        res_str = ", ".join([f"{k}: {v['current']}/{v['max']}" for k, v in player_state.get('resources', {}).items()]) or "Nenhum"
+        slots_str = ", ".join([f"Nv {k}: {v['current']}/{v['max']}" for k, v in player_state.get('spell_slots', {}).items()]) or "Nenhum"
+        acts = player_state.get('action_economy', {})
+        act_str = f"Principal: {'Sim' if acts.get('main') else 'Gasta'}, Bônus: {'Sim' if acts.get('bonus') else 'Gasta'}, Reação: {'Sim' if acts.get('reaction') else 'Gasta'}"
+
+        char_sheet_str = f"Nome: {player_state.get('name', 'Desconhecido')} | Raça: {player_state.get('race', 'N/A')} | Classe: {player_state.get('character_class', 'N/A')} | Nível: {player_state.get('level', 1)}\n" \
+                         f"HP: {player_state.get('current_hp')}/{player_state.get('max_hp')} | CA: {player_state.get('armor_class')}\n" \
+                         f"Inventário: {inv} | Magias: {spls}\n" \
+                         f"Características: {feats}\n" \
+                         f"Cargas/Recursos: {res_str} | Spell Slots: {slots_str}\n"
+                         
+        if player_state.get("in_combat"):
+            char_sheet_str += f"Status: EM COMBATE\nAções Atuais Livres: {act_str}\nOrdem de Iniciativa: {', '.join(player_state.get('initiative_order', []))}"
+
+        formatted_prompt = self.prompt.format(character_sheet=char_sheet_str, lore=self.campaign_lore, location=player_state["location"], session_summary=self.session_summary, context=context, chat_history=history_text, action=message)
         llm_response = self.llm.invoke(formatted_prompt)
         
         hp_match = re.search(r'\[MODIFY_HP:([+-]?\d+)\]', llm_response)
@@ -150,6 +233,85 @@ Resposta do Mestre:""",
                 self.chat_history.append(f"Sistema: O jogador recebeu o item '{new_item}'.")
             except Exception as e: print(f"Erro ao processar Item: {e}")
 
+        combat_match = re.search(r'\[START_COMBAT:(.+?)\]', llm_response)
+        if combat_match:
+            try:
+                enemies_str = combat_match.group(1)
+                enemies = [e.strip() for e in enemies_str.split(',')]
+                
+                dex_mod = player_state.get('attributes', {}).get('dexterity', 10)
+                dex_mod = (dex_mod - 10) // 2
+                player_init = roll_dice(f"1d20+{dex_mod}")['total']
+                
+                initiatives = [{"name": player_state.get('name', 'Jogador'), "score": player_init}]
+                for enemy in enemies:
+                    enemy_init = roll_dice("1d20")['total']
+                    initiatives.append({"name": enemy, "score": enemy_init})
+                
+                initiatives = sorted(initiatives, key=lambda x: x['score'], reverse=True)
+                order_list = [f"{i['name']} ({i['score']})" for i in initiatives]
+                
+                player_state["in_combat"] = True
+                player_state["initiative_order"] = order_list
+                save_func(player_state)
+                
+                order_html = "<br>".join([f"<b>{idx+1}.</b> {item}" for idx, item in enumerate(order_list)])
+                combat_block = f"<div class='bg-red-900/50 p-3 rounded border border-red-500 text-red-100 my-2 shadow-lg'>⚔️ <b>Combate Iniciado!</b><br><b>Ordem de Iniciativa:</b><br>{order_html}</div>"
+                llm_response = re.sub(r'\[START_COMBAT:.+?\]', combat_block, llm_response)
+                self.chat_history.append(f"Sistema: O combate começou. Ordem: {', '.join(order_list)}.")
+            except Exception as e: print(f"Erro ao iniciar combate: {e}")
+
+        end_combat_match = re.search(r'\[END_COMBAT\]', llm_response)
+        if end_combat_match:
+            player_state["in_combat"] = False
+            player_state["initiative_order"] = []
+            save_func(player_state)
+            end_block = f"<div class='bg-green-900/50 p-3 rounded border border-green-500 text-green-100 my-2 shadow-lg'>🕊️ <b>Combate Encerrado!</b> A poeira assenta...</div>"
+            llm_response = re.sub(r'\[END_COMBAT\]', end_block, llm_response)
+            self.chat_history.append("Sistema: O combate terminou.")
+
+        # Processamento de Recursos e Spell Slots
+        res_match = re.search(r'\[USE_RESOURCE:(.+?)\]', llm_response)
+        if res_match:
+            res_name = res_match.group(1).strip()
+            if "resources" in player_state and res_name in player_state["resources"]:
+                player_state["resources"][res_name]["current"] = max(0, player_state["resources"][res_name]["current"] - 1)
+                save_func(player_state)
+                llm_response = re.sub(r'\[USE_RESOURCE:.+?\]', f"<div class='text-xs text-purple-400 font-bold'>⚡ Recurso Gasto: {res_name}</div>", llm_response)
+
+        slot_match = re.search(r'\[USE_SPELL_SLOT:(\d+)\]', llm_response)
+        if slot_match:
+            lvl = slot_match.group(1).strip()
+            if "spell_slots" in player_state and lvl in player_state["spell_slots"]:
+                player_state["spell_slots"][lvl]["current"] = max(0, player_state["spell_slots"][lvl]["current"] - 1)
+                save_func(player_state)
+                llm_response = re.sub(r'\[USE_SPELL_SLOT:\d+\]', f"<div class='text-xs text-blue-400 font-bold'>✨ Spell Slot Gasto: Círculo {lvl}</div>", llm_response)
+
+        # Processamento de Economia de Ação
+        act_match = re.findall(r'\[USE_ACTION:(main|bonus|reaction)\]', llm_response)
+        if act_match:
+            for act in act_match: player_state["action_economy"][act] = False
+            save_func(player_state)
+            llm_response = re.sub(r'\[USE_ACTION:(main|bonus|reaction)\]', "", llm_response)
+
+        if '[RESET_TURN]' in llm_response:
+            player_state["action_economy"] = {"main": True, "bonus": True, "reaction": True}
+            save_func(player_state)
+            llm_response = llm_response.replace('[RESET_TURN]', "<div class='text-xs text-green-400 font-bold'>🔄 Turno Renovado (Ações Restauradas)</div>")
+
+        if '[RESTORE_ALL]' in llm_response:
+            player_state["current_hp"] = player_state["max_hp"]
+            if "resources" in player_state:
+                for k in player_state["resources"]: player_state["resources"][k]["current"] = player_state["resources"][k]["max"]
+            if "spell_slots" in player_state:
+                for k in player_state["spell_slots"]: player_state["spell_slots"][k]["current"] = player_state["spell_slots"][k]["max"]
+            save_func(player_state)
+            llm_response = llm_response.replace('[RESTORE_ALL]', "<div class='bg-green-900/50 p-3 rounded border border-green-500 text-green-100 my-2 shadow-lg'>⛺ <b>Descanso Longo!</b> HP, Spell Slots e Recursos restaurados na totalidade.</div>")
+
+        # Processar blocos de diálogo de NPCs
+        npc_block = r"<div class='bg-cyan-900/30 border-l-4 border-cyan-500 p-3 my-3 rounded-r shadow-sm'><span class='text-cyan-400 font-bold text-xs uppercase tracking-wider block mb-1'>💬 \1</span><span class='text-cyan-50 italic'>\2</span></div>"
+        llm_response = re.sub(r'\[NPC:(.+?)\](.*?)\[/NPC\]', npc_block, llm_response, flags=re.DOTALL)
+
         self.chat_history.extend([f"Jogador: {message}", f"Mestre: {llm_response}"])
-        html_res = f"{llm_response.replace(chr(10), '<br>')}<br><br><details><summary class='text-xs text-gray-500 cursor-pointer'>Ver Regras/Contexto</summary><i class='text-gray-600 text-xs mt-2 block'>{context[:400]}...</i></details>"
+        html_res = f"{prefix_html}{llm_response.replace(chr(10), '<br>')}<br><br><details><summary class='text-xs text-gray-500 cursor-pointer'>Ver Regras/Contexto</summary><i class='text-gray-600 text-xs mt-2 block'>{context[:400]}...</i></details>"
         return html_res

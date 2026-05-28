@@ -1,28 +1,110 @@
 {
-    "items": [
-        "Adaga",
-        "Arco Curto",
-        "Arco Longo",
-        "Besta Leve",
-        "Besta Pesada",
-        "Espada Curta",
-        "Espada Longa",
-        "Machado de Batalha",
-        "Machado Grande",
-        "Maça",
-        "Martelo de Guerra",
-        "Rapieira",
-        "Armadura de Couro",
-        "Cota de Malha",
-        "Brunea",
-        "Placas",
-        "Escudo",
-        "Poção de Cura",
-        "Corda (15m)",
-        "Tocha",
-        "Mochila do Aventureiro",
-        "Rações (1 dia)"
-    ],
+    "items": {
+        "Adaga": {
+            "type": "Arma",
+            "name": "Adaga",
+            "description": "Arma corpo-a-corpo simples. 1d4 de dano perfurante.",
+            "status": {
+                "damage": "1d4",
+                "damage_type": "perfurante",
+                "properties": [
+                    "acuidade",
+                    "leve",
+                    "arremesso"
+                ]
+            }
+        },
+        "Arco Longo": {
+            "type": "Arma",
+            "name": "Arco Longo",
+            "description": "Arma à distância. 1d8 de dano perfurante.",
+            "status": {
+                "damage": "1d8",
+                "damage_type": "perfurante",
+                "properties": [
+                    "munição",
+                    "pesado",
+                    "duas mãos"
+                ]
+            }
+        },
+        "Machado Grande": {
+            "type": "Arma",
+            "name": "Machado Grande",
+            "description": "Machado de um guerreiro furioso. 1d12 de dano cortante.",
+            "status": {
+                "damage": "1d12",
+                "damage_type": "cortante",
+                "properties": [
+                    "pesado",
+                    "duas mãos"
+                ]
+            }
+        },
+        "Armadura de Couro": {
+            "type": "Armadura",
+            "name": "Armadura de Couro",
+            "description": "Armadura leve. CA 11 + Modificador de Destreza.",
+            "status": {
+                "armor_type": "light",
+                "base_ac": 11
+            }
+        },
+        "Brunea": {
+            "type": "Armadura",
+            "name": "Brunea",
+            "description": "Armadura média (escamas). CA 14 + Modificador de Destreza (máx 2). Desvantagem em Furtividade.",
+            "status": {
+                "armor_type": "medium",
+                "base_ac": 14,
+                "stealth_disadvantage": true
+            }
+        },
+        "Cota de Malha": {
+            "type": "Armadura",
+            "name": "Cota de Malha",
+            "description": "Armadura pesada. CA 16. Requer For 13. Desvantagem em Furtividade.",
+            "status": {
+                "armor_type": "heavy",
+                "base_ac": 16,
+                "strength_req": 13,
+                "stealth_disadvantage": true
+            }
+        },
+        "Placas": {
+            "type": "Armadura",
+            "name": "Placas",
+            "description": "Armadura pesada. CA 18. Requer For 15. Desvantagem em Furtividade.",
+            "status": {
+                "armor_type": "heavy",
+                "base_ac": 18,
+                "strength_req": 15,
+                "stealth_disadvantage": true
+            }
+        },
+        "Escudo": {
+            "type": "Escudo",
+            "name": "Escudo",
+            "description": "Concede +2 na sua Classe de Armadura.",
+            "status": {
+                "ac_bonus": 2
+            }
+        },
+        "Poção de Cura": {
+            "type": "Consumível",
+            "name": "Poção de Cura",
+            "description": "Um personagem que beber o líquido deste frasco recupera 2d4+2 pontos de vida.",
+            "status": {
+                "healing": "2d4+2"
+            }
+        },
+        "Mochila do Aventureiro": {
+            "type": "Misc",
+            "name": "Mochila do Aventureiro",
+            "description": "Equipamento contendo cordas, tochas, rações, e outras necessidades de viagem.",
+            "status": {}
+        }
+    },
     "armor": {
         "Armadura de Couro": {
             "type": "light",

@@ -1,0 +1,30 @@
+# =========================
+# Python & Ambientes
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ambientes Virtuais
+venv/
+.venv/
+env/
+ENV/
+
+# Variáveis de ambiente (se usares no futuro para API keys)
+.env
+
+# =========================
+# IDEs e Editores
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Dados Locais do Projeto
+# =========================
+data/db/
+data/pdf_modules/
+data/saves/

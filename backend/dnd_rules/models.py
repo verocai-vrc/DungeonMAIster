@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, computed_field
 import math
-from typing import List
+from typing import List, Dict, Any
 
 class Attributes(BaseModel):
     """Modelo dos atributos base de D&D 5e."""
@@ -49,3 +49,9 @@ class CharacterSheet(BaseModel):
     armor_class: int
     inventory: List[str] = []
     features: List[str] = []
+    spells: List[str] = []
+    resources: Dict[str, Any] = Field(default={}, description="Recursos de classe (ex: Fúria: {current: 2, max: 2})")
+    spell_slots: Dict[str, Any] = Field(default={}, description="Espaços de magia por nível (ex: '1': {current: 2, max: 2})")
+    action_economy: Dict[str, bool] = Field(default={"main": True, "bonus": True, "reaction": True}, description="Economia de ação no turno")
+    in_combat: bool = Field(default=False, description="Indica se o personagem está em combate")
+    initiative_order: List[str] = Field(default=[], description="Ordem de iniciativa atual")

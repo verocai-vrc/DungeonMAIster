@@ -56,7 +56,7 @@
         }
     },
     "descriptions": {
-        "Ataque Selvagem": "Acertos críticos causam dano extra massivo.",
-        "Resistência Implacável": "Quando cai para 0 HP, pode escolher cair para 1 HP em vez disso (1/descanso longo)."
+        "Ataque Selvagem": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Acertos críticos causam dano extra massivo.",
+        "Resistência Implacável": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva | 1/Descanso Longo</span>Quando cai para 0 HP, pode escolher cair para 1 HP em vez disso (1/descanso longo)."
     }
 }

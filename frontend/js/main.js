@@ -1,11 +1,14 @@
 let ws;
 let currentCharacterData = null;
 let currentEditInventory = [];
+let currentEditSpells = [];
+let currentEditResources = {};
+let currentEditSpellSlots = {};
 let lastAppliedRace = null;
 
 // --- SISTEMA DE TABS ---
 function switchTab(tabId) {
-    ['sheet', 'inventory', 'spells', 'system'].forEach(id => {
+    ['sheet', 'inventory', 'abilities', 'system'].forEach(id => {
         document.getElementById(`tab-${id}`).classList.add('hidden');
         document.getElementById(`btn-${id}`).classList.remove('border-blue-500', 'text-blue-400');
         document.getElementById(`btn-${id}`).classList.add('border-transparent', 'text-gray-400');
@@ -27,7 +30,10 @@ function connectWS() {
         document.getElementById('ws-status').className = 'text-sm text-green-400 font-bold';
         appendMessage('Sistema', 'Conexão estabelecida com o servidor DungeonMAIster.');
     };
-    ws.onmessage = (event) => appendMessage('Mestre', event.data);
+    ws.onmessage = (event) => {
+        appendMessage('Mestre', event.data);
+        loadCharacter(true); // Puxa os dados atualizados (HP, CA, Inventário, etc) silenciosamente
+    };
     ws.onclose = () => {
         document.getElementById('ws-status').textContent = 'Desconectado';
         document.getElementById('ws-status').className = 'text-sm text-red-400 font-bold';
@@ -56,9 +62,22 @@ function appendMessage(sender, text) {
     const isSystem = sender === 'Sistema';
     
     if (!isPlayer && !isSystem) {
-        const rollRegex = /\[REQUEST_ROLL:(.*?)\]/g;
-        text = text.replace(rollRegex, (match, expr) => {
-            return `<div class="mt-4 border-t border-gray-700 pt-3"><button onclick="sendRoll('${expr}')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-bold shadow-md transition w-full flex justify-center items-center gap-2">🎲 Rolar Teste (${expr})</button></div>`;
+        const rollRegex = /\[REQUEST_ROLL(?:.*?)?\]/g;
+        text = text.replace(rollRegex, () => {
+            const uniqueId = 'roll-desc-' + Math.random().toString(36).substr(2, 9);
+            return `
+            <div class="mt-4 border-t border-gray-700 pt-3 space-y-2">
+                <p class="text-xs text-gray-400 uppercase font-bold">O Mestre solicitou um teste. Como queres agir?</p>
+                <input type="text" id="${uniqueId}" placeholder="Ex: Tento intimidar com força..." class="w-full bg-gray-900 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500 text-sm">
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-1">
+                    <button onclick="sendAttrRoll('FOR', '${uniqueId}')" class="bg-red-900/80 hover:bg-red-700 text-white py-1 rounded text-xs font-bold transition">FOR</button>
+                    <button onclick="sendAttrRoll('DES', '${uniqueId}')" class="bg-green-900/80 hover:bg-green-700 text-white py-1 rounded text-xs font-bold transition">DES</button>
+                    <button onclick="sendAttrRoll('CON', '${uniqueId}')" class="bg-orange-900/80 hover:bg-orange-700 text-white py-1 rounded text-xs font-bold transition">CON</button>
+                    <button onclick="sendAttrRoll('INT', '${uniqueId}')" class="bg-blue-900/80 hover:bg-blue-700 text-white py-1 rounded text-xs font-bold transition">INT</button>
+                    <button onclick="sendAttrRoll('SAB', '${uniqueId}')" class="bg-indigo-900/80 hover:bg-indigo-700 text-white py-1 rounded text-xs font-bold transition">SAB</button>
+                    <button onclick="sendAttrRoll('CAR', '${uniqueId}')" class="bg-pink-900/80 hover:bg-pink-700 text-white py-1 rounded text-xs font-bold transition">CAR</button>
+                </div>
+            </div>`;
         });
     }
 
@@ -71,6 +90,19 @@ function appendMessage(sender, text) {
 function sendRoll(expr) {
     if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Por favor, conecta-te ao Mestre IA."); return; }
     ws.send(`/roll ${expr}`);
+}
+
+function sendAttrRoll(attr, inputId) {
+    if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Por favor, conecta-te ao Mestre IA."); return; }
+    const descInput = document.getElementById(inputId);
+    const desc = descInput ? descInput.value.trim() : "";
+    
+    const displayMsg = desc ? `Ação com ${attr}: ${desc}` : `Faço um teste de ${attr}.`;
+    appendMessage('Jogador', displayMsg);
+    
+    ws.send(`/roll${attr} ${desc}`);
+    
+    if (descInput) descInput.disabled = true;
 }
 
 function quickRoll(name, isAttribute = false, mod = 0) {
@@ -96,7 +128,7 @@ function renderTooltipItem(name) {
     </li>`;
 }
 
-async function loadCharacter() {
+async function loadCharacter(silent = false) {
     try {
         const response = await fetch("http://localhost:8000/api/character");
         if (!response.ok) throw new Error("Erro de rede");
@@ -108,7 +140,7 @@ async function loadCharacter() {
         document.getElementById('char-class').textContent = data.character_class;
         document.getElementById('char-level').textContent = data.level;
         document.getElementById('char-xp').textContent = data.xp !== undefined ? data.xp : 0;
-        document.getElementById('char-location').textContent = data.location;
+        document.getElementById('char-location').textContent = data.location + (data.in_combat ? " ⚔️ (Em Combate)" : "");
         document.getElementById('char-hp').textContent = `${data.current_hp} / ${data.max_hp}`;
         document.getElementById('char-ac').textContent = data.armor_class;
 
@@ -126,16 +158,48 @@ async function loadCharacter() {
             attrDiv.innerHTML += `<div onclick="quickRoll('${a.name}', true, ${a.mod})" class="bg-gray-800 p-3 border border-gray-700 rounded flex justify-between items-center cursor-pointer hover:bg-gray-700 transition" title="Rolar Teste de ${a.name}"><span class="font-bold text-gray-400 pointer-events-none">${a.name}</span><div class="text-right pointer-events-none"><span class="text-xl font-semibold text-gray-200">${a.val}</span><span class="text-sm text-gray-500 ml-2">(${a.mod >= 0 ? '+'+a.mod : a.mod})</span></div></div>`;
         });
 
+        const actDiv = document.getElementById('char-actions');
+        if (data.in_combat) {
+            actDiv.classList.remove('hidden');
+            document.getElementById('act-main').className = `flex-1 p-2 rounded transition ${data.action_economy.main ? 'bg-green-700 text-white shadow-sm' : 'bg-gray-800 text-gray-500 line-through'}`;
+            document.getElementById('act-bonus').className = `flex-1 p-2 rounded transition ${data.action_economy.bonus ? 'bg-green-700 text-white shadow-sm' : 'bg-gray-800 text-gray-500 line-through'}`;
+            document.getElementById('act-react').className = `flex-1 p-2 rounded transition ${data.action_economy.reaction ? 'bg-green-700 text-white shadow-sm' : 'bg-gray-800 text-gray-500 line-through'}`;
+        } else { actDiv.classList.add('hidden'); }
+
+        const resContainer = document.getElementById('char-resources');
+        resContainer.innerHTML = '';
+        if (data.resources && Object.keys(data.resources).length > 0) {
+            Object.keys(data.resources).forEach(k => {
+                resContainer.innerHTML += `<div class="bg-gray-800 p-2 text-sm rounded border border-gray-700 flex justify-between items-center"><span>${k}</span> <span class="font-bold text-blue-400 bg-gray-900 px-2 py-1 rounded">${data.resources[k].current} / ${data.resources[k].max}</span></div>`;
+            });
+        }
+        
+        const slotsContainer = document.getElementById('char-spellslots');
+        slotsContainer.innerHTML = '';
+        if (data.spell_slots && Object.keys(data.spell_slots).length > 0) {
+            Object.keys(data.spell_slots).forEach(k => {
+                slotsContainer.innerHTML += `<div class="bg-purple-900/40 p-2 text-sm rounded border border-purple-800/50 flex justify-between items-center"><span class="text-purple-300">Slot Nível ${k}</span> <span class="font-bold text-purple-300 bg-gray-900 px-2 py-1 rounded">${data.spell_slots[k].current} / ${data.spell_slots[k].max}</span></div>`;
+            });
+        }
+
         const invUl = document.getElementById('char-inventory');
         invUl.innerHTML = data.inventory.map(item => renderTooltipItem(item)).join('');
         if(data.inventory.length === 0) invUl.innerHTML = '<li class="text-gray-500 italic text-sm p-1 list-none">Vazio.</li>';
+
+        const spellsContainer = document.getElementById('spells-container');
+        if (data.spells && data.spells.length > 0) {
+            spellsContainer.innerHTML = `<ul class="space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">${data.spells.map(spell => renderTooltipItem(spell)).join('')}</ul>`;
+        } else { spellsContainer.innerHTML = '<div class="text-gray-500 italic text-sm">Nenhuma magia na ficha.</div>'; }
 
         const featsUl = document.getElementById('char-features');
         featsUl.innerHTML = data.features.map(feat => renderTooltipItem(feat)).join('');
         if(data.features.length === 0) featsUl.innerHTML = '<li class="text-gray-500 italic list-none">Nenhuma característica.</li>';
 
-        switchTab('sheet');
-    } catch (error) { console.error(error); alert("Erro ao carregar a ficha. Verifica o backend."); }
+        if (!silent) switchTab('sheet');
+    } catch (error) { 
+        console.error(error); 
+        if (!silent) alert("Erro ao carregar a ficha. Verifica o backend."); 
+    }
 }
 
 let dndRules = null;
@@ -150,24 +214,26 @@ async function fetchRules() {
             Object.keys(dndRules.classes).forEach(cls => { classSelect.add(new Option(cls, cls)); });
 
             const inventorySelect = document.getElementById('add-inventory-select');
-            if (dndRules.equipment && dndRules.equipment.length > 0) {
-                dndRules.equipment.forEach(item => { inventorySelect.add(new Option(item, item)); });
+            if (dndRules.equipment) {
+                Object.keys(dndRules.equipment).forEach(item => { inventorySelect.add(new Option(item, item)); });
             }
 
-            const spellsContainer = document.getElementById('spells-container');
-            spellsContainer.innerHTML = '';
+            const spellSelect = document.getElementById('add-spell-select');
             if (dndRules.spells && Object.keys(dndRules.spells).length > 0) {
                 Object.keys(dndRules.spells).forEach(level => {
-                    let html = `<div class="bg-gray-800 p-3 rounded border border-gray-700 shadow-sm"><h4 class="text-blue-400 font-bold mb-2">Círculo ${level}</h4><ul class="text-gray-300 text-sm space-y-1">`;
-                    dndRules.spells[level].forEach(spell => { html += renderTooltipItem(spell); });
-                    html += `</ul></div>`;
-                    spellsContainer.innerHTML += html;
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = `Círculo ${level}`;
+                    dndRules.spells[level].forEach(spell => { optgroup.appendChild(new Option(spell, spell)); });
+                    spellSelect.appendChild(optgroup);
                 });
-            } else { spellsContainer.innerHTML = '<div class="text-gray-500 italic text-sm">Nenhuma magia encontrada.</div>'; }
+            }
         }
     } catch (error) { console.error("Erro ao carregar as regras:", error); }
 }
-window.addEventListener('DOMContentLoaded', fetchRules);
+window.addEventListener('DOMContentLoaded', async () => {
+    await fetchRules();
+    loadCharacter(true); // Carrega a ficha após as regras para garantir as descrições
+});
 
 function updateInventoryUI() {
     const list = document.getElementById('edit-inventory-list');
@@ -183,8 +249,25 @@ function addInventoryItem() {
 }
 function removeInventoryItem(index) { currentEditInventory.splice(index, 1); updateInventoryUI(); updateAutoFeatures(); }
 
+function updateSpellsUI() {
+    const list = document.getElementById('edit-spells-list');
+    list.innerHTML = currentEditSpells.map((item, index) => 
+        `<li class="flex justify-between items-center bg-gray-800 p-1 px-2 rounded"><span>${item}</span><button type="button" onclick="removeSpellItem(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 text-lg leading-none">&times;</button></li>`
+    ).join('');
+    if (currentEditSpells.length === 0) list.innerHTML = '<li class="text-gray-500 italic text-sm p-1">Sem magias.</li>';
+}
+
+function addSpellItem() {
+    const item = document.getElementById('add-spell-select').value;
+    if (item) { currentEditSpells.push(item); updateSpellsUI(); }
+}
+function removeSpellItem(index) { currentEditSpells.splice(index, 1); updateSpellsUI(); }
+
 function updateAutoFeatures() {
     if (!dndRules) return;
+    currentEditResources = {};
+    currentEditSpellSlots = {};
+    
     const race = document.getElementById('edit-race').value;
     const cls = document.getElementById('edit-class').value;
     const lvl = parseInt(document.getElementById('edit-level').value) || 1;
@@ -212,6 +295,18 @@ function updateAutoFeatures() {
         if (raceData.features) autoFeats.push(...raceData.features);
     }
     
+    if (cls === "Bárbaro") {
+        let rages = lvl >= 6 ? 4 : (lvl >= 3 ? 3 : 2);
+        currentEditResources["Fúria"] = {max: rages, current: rages};
+    }
+    if (["Mago", "Clérigo", "Feiticeiro"].includes(cls)) {
+        const slots = [{}, {"1":2}, {"1":3}, {"1":4,"2":2}, {"1":4,"2":3}, {"1":4,"2":3,"3":2}];
+        const lvlSlots = slots[Math.min(lvl, 5)] || {"1":4,"2":3,"3":3,"4":1}; // Suporte básico
+        Object.keys(lvlSlots).forEach(k => {
+            currentEditSpellSlots[k] = {max: lvlSlots[k], current: lvlSlots[k]};
+        });
+    }
+
     const classData = dndRules.classes[cls];
     if (classData) {
         if (classData.proficiencies) autoFeats.push(`Perícias: ${classData.proficiencies.join(", ")}`);
@@ -236,15 +331,15 @@ function updateAutoFeatures() {
     const dexMod = Math.floor((dex - 10) / 2);
     let baseAC = 10 + dexMod;
     let bestArmorAC = 0; let hasShield = false;
-    if (dndRules.armor) {
+    if (dndRules.equipment) {
         currentEditInventory.forEach(item => {
-            const armorData = dndRules.armor[item];
-            if (armorData) {
-                if (armorData.type === 'shield') { hasShield = true; } 
-                else {
-                    let calcAC = armorData.base;
-                    if (armorData.type === 'light') calcAC += dexMod;
-                    else if (armorData.type === 'medium') calcAC += Math.min(dexMod, 2);
+            const eqData = dndRules.equipment[item];
+            if (eqData && eqData.status) {
+                if (eqData.type === 'Escudo' || eqData.status.ac_bonus) { hasShield = true; } 
+                else if (eqData.type === 'Armadura') {
+                    let calcAC = eqData.status.base_ac || 10;
+                    if (eqData.status.armor_type === 'light') calcAC += dexMod;
+                    else if (eqData.status.armor_type === 'medium') calcAC += Math.min(dexMod, 2);
                     if (calcAC > bestArmorAC) bestArmorAC = calcAC;
                 }
             }
@@ -262,7 +357,7 @@ function openEditModal(isNew) {
         ['edit-name','edit-inventory','edit-location'].forEach(id => document.getElementById(id).value = id === 'edit-location' ? "Desconhecido" : "");
         ['edit-race','edit-class'].forEach(id => document.getElementById(id).selectedIndex = 0);
         ['edit-level','edit-max-hp','edit-current-hp','edit-ac','edit-str','edit-dex','edit-con','edit-int','edit-wis','edit-cha'].forEach(id => document.getElementById(id).value = (id === 'edit-level') ? "1" : "10");
-        currentEditInventory = []; updateInventoryUI(); lastAppliedRace = null; updateAutoFeatures();
+        currentEditInventory = []; updateInventoryUI(); currentEditSpells = []; updateSpellsUI(); currentEditResources = {}; currentEditSpellSlots = {}; lastAppliedRace = null; updateAutoFeatures();
     } else {
         title.textContent = "Editar Ficha";
         const d = currentCharacterData;
@@ -271,7 +366,8 @@ function openEditModal(isNew) {
         document.getElementById('edit-max-hp').value = d.max_hp; document.getElementById('edit-current-hp').value = d.current_hp; document.getElementById('edit-ac').value = d.armor_class;
         document.getElementById('edit-str').value = d.attributes.strength; document.getElementById('edit-dex').value = d.attributes.dexterity; document.getElementById('edit-con').value = d.attributes.constitution;
         document.getElementById('edit-int').value = d.attributes.intelligence; document.getElementById('edit-wis').value = d.attributes.wisdom; document.getElementById('edit-cha').value = d.attributes.charisma;
-        currentEditInventory = [...d.inventory]; updateInventoryUI(); lastAppliedRace = d.race; document.getElementById('edit-features').value = d.features.join(", ");
+        currentEditInventory = [...d.inventory]; updateInventoryUI(); currentEditSpells = d.spells ? [...d.spells] : []; updateSpellsUI(); lastAppliedRace = d.race; document.getElementById('edit-features').value = d.features.join(", ");
+        if (d.resources) currentEditResources = d.resources; if (d.spell_slots) currentEditSpellSlots = d.spell_slots;
     }
     document.getElementById('char-modal').classList.remove('hidden');
 }
@@ -284,8 +380,11 @@ async function saveCharacter() {
         character_class: document.getElementById('edit-class').value || "Aventureiro", level: parseInt(document.getElementById('edit-level').value) || 1, xp: parseInt(document.getElementById('edit-xp').value) || 0,
         location: document.getElementById('edit-location').value || "Desconhecido", max_hp: parseInt(document.getElementById('edit-max-hp').value) || 10,
         current_hp: parseInt(document.getElementById('edit-current-hp').value) || 10, armor_class: parseInt(document.getElementById('edit-ac').value) || 10,
-        inventory: currentEditInventory, features: document.getElementById('edit-features').value.split(',').map(i => i.trim()).filter(i => i !== ''),
-        attributes: { strength: parseInt(document.getElementById('edit-str').value) || 10, dexterity: parseInt(document.getElementById('edit-dex').value) || 10, constitution: parseInt(document.getElementById('edit-con').value) || 10, intelligence: parseInt(document.getElementById('edit-int').value) || 10, wisdom: parseInt(document.getElementById('edit-wis').value) || 10, charisma: parseInt(document.getElementById('edit-cha').value) || 10 }
+        inventory: currentEditInventory, spells: currentEditSpells, features: document.getElementById('edit-features').value.split(',').map(i => i.trim()).filter(i => i !== ''),
+        resources: currentEditResources, spell_slots: currentEditSpellSlots,
+        attributes: { strength: parseInt(document.getElementById('edit-str').value) || 10, dexterity: parseInt(document.getElementById('edit-dex').value) || 10, constitution: parseInt(document.getElementById('edit-con').value) || 10, intelligence: parseInt(document.getElementById('edit-int').value) || 10, wisdom: parseInt(document.getElementById('edit-wis').value) || 10, charisma: parseInt(document.getElementById('edit-cha').value) || 10 },
+        in_combat: currentCharacterData ? currentCharacterData.in_combat : false,
+        initiative_order: currentCharacterData ? currentCharacterData.initiative_order : []
     };
     try {
         const res = await fetch("http://localhost:8000/api/character", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });

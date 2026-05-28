@@ -102,7 +102,7 @@
     "descriptions": {
         "Fúria": "Em batalha, você luta com ferocidade primitiva. No seu turno, você pode entrar em fúria como uma ação bônus, ganhando vantagem em Força e resistência a dano físico.",
         "Defesa sem Armadura": "Enquanto não usar armadura, CA = 10 + Mod DES + Mod CON.",
-        "Ataque Furtivo": "Você sabe como atacar sutilmente. Causa dano extra se tiver vantagem."
+        "Ataque Furtivo": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Você sabe como atacar sutilmente. Causa dano extra se tiver vantagem."
     },
     "features": []
 }

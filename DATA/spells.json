@@ -11,10 +11,10 @@
         ]
     },
     "descriptions": {
-        "Mísseis Mágicos": "Crias três dardos mágicos brilhantes. Cada dardo atinge uma criatura e causa 1d4+1 de dano de energia.",
-        "Curar Ferimentos": "Uma criatura que você toca recupera pontos de vida iguais a 1d8 + seu modificador.",
-        "Escudo Arcano": "Uma barreira invisível aparece e protege você. Ganha +5 de bônus na CA até seu próximo turno.",
-        "Passo Nebuloso": "Você é cercado por névoa e teletransporta-se até 9 metros.",
-        "Arma Espiritual": "Você cria uma arma flutuante espectral que atinge uma criatura."
+        "Mísseis Mágicos": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Principal | Custo: 1 Spell Slot</span>Crias três dardos mágicos brilhantes. Cada dardo atinge uma criatura e causa 1d4+1 de dano de energia.",
+        "Curar Ferimentos": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Principal | Custo: 1 Spell Slot</span>Uma criatura que você toca recupera pontos de vida iguais a 1d8 + seu modificador.",
+        "Escudo Arcano": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Reação | Custo: 1 Spell Slot</span>Uma barreira invisível aparece e protege você. Ganha +5 de bônus na CA até seu próximo turno.",
+        "Passo Nebuloso": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Spell Slot</span>Você é cercado por névoa e teletransporta-se até 9 metros.",
+        "Arma Espiritual": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Spell Slot</span>Você cria uma arma flutuante espectral que atinge uma criatura."
     }
 }

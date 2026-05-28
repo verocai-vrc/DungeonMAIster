@@ -28,16 +28,20 @@ async def get_rules():
     descriptions = {}
     descriptions.update(abilities.get("descriptions", {}))
     descriptions.update(spells.get("descriptions", {}))
-    descriptions.update(equipment.get("descriptions", {}))
     descriptions.update(races.get("descriptions", {}))
     descriptions.update(classes.get("descriptions", {}))
+    
+    # Extrai descrições embutidas na nova estrutura de itens
+    eq_items = equipment.get("items", {})
+    for item_name, item_data in eq_items.items():
+        if "description" in item_data:
+            descriptions[item_name] = item_data["description"]
     
     return {
         "races": races.get("races", {}),
         "classes": classes.get("classes", {}),
         "spells": spells.get("spells_by_level", {}),
-        "equipment": equipment.get("items", []),
-        "armor": equipment.get("armor", {}),
+        "equipment": eq_items,
         "descriptions": descriptions
     }
 

@@ -15,6 +15,15 @@
 </head>
 <body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden font-sans">
 
+                <div id="char-actions" class="hidden border-t border-gray-700 pt-4">
+                    <h3 class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Ações neste Turno (Combate)</h3>
+                    <div class="flex gap-2 text-center text-xs font-bold uppercase">
+                        <div id="act-main" class="flex-1 bg-green-700 text-white p-2 rounded shadow-sm transition">Principal</div>
+                        <div id="act-bonus" class="flex-1 bg-green-700 text-white p-2 rounded shadow-sm transition">Bônus</div>
+                        <div id="act-react" class="flex-1 bg-green-700 text-white p-2 rounded shadow-sm transition">Reação</div>
+                    </div>
+                </div>
+
     <!-- PAINEL ESQUERDO: MUNDO (CHAT) - 65% -->
     <div class="w-[65%] flex flex-col border-r border-gray-700">
         <!-- Header Chat -->
@@ -41,7 +50,7 @@
         <div class="flex border-b border-gray-700 bg-gray-800">
             <button onclick="switchTab('sheet')" class="flex-1 py-3 text-center font-semibold focus:outline-none border-b-2 border-blue-500 text-blue-400" id="btn-sheet">Ficha</button>
             <button onclick="switchTab('inventory')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-inventory">Inventário</button>
-            <button onclick="switchTab('spells')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-spells">Magias</button>
+            <button onclick="switchTab('abilities')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-abilities">Habilidades</button>
             <button onclick="switchTab('system')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-system">Sistema</button>
         </div>
 
@@ -58,7 +67,8 @@
 
                 <div class="bg-gray-800 p-4 rounded border border-gray-700 shadow-sm">
                     <h2 class="text-xl font-bold text-blue-400" id="char-name">Desconhecido</h2>
-                    <p class="text-sm text-gray-400">Raça: <span id="char-race">-</span> | Classe: <span id="char-class">-</span> | Nível: <span id="char-level">-</span>
+                    <p class="text-sm text-gray-400">Raça: <span id="char-race">-</span> | Classe: <span id="char-class">-</span> | Nível: <span id="char-level">-</span> (<span id="char-xp">-</span> XP)</p>
+                    <p class="text-sm text-gray-400 mt-1">📍 Local: <span id="char-location" class="text-yellow-400">-</span></p>
                 </div>
                 
                 <div class="flex gap-4 text-center">
@@ -78,13 +88,6 @@
                         <div class="text-gray-500 italic text-sm col-span-2">Por favor, carrega a ficha na aba Sistema.</div>
                     </div>
                 </div>
-
-                <div>
-                    <h3 class="font-bold border-b border-gray-700 pb-2 mt-6 mb-4 text-gray-300">Características e Habilidades</h3>
-                    <ul id="char-features" class="space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">
-                        <li class="text-gray-500 italic list-none">Vazio.</li>
-                    </ul>
-                </div>
             </div>
 
             <!-- ABA: INVENTÁRIO -->
@@ -95,11 +98,26 @@
                 </ul>
             </div>
 
-            <!-- ABA: MAGIAS -->
-            <div id="tab-spells" class="hidden space-y-4">
-                <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Grimório (Magias Disponíveis)</h3>
-                <div id="spells-container" class="space-y-4">
-                    <div class="text-gray-500 italic text-sm">A carregar magias...</div>
+            <!-- ABA: HABILIDADES -->
+            <div id="tab-abilities" class="hidden space-y-4">
+                <div>
+                    <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Recursos e Espaços de Magia</h3>
+                    <div id="char-resources" class="grid grid-cols-2 gap-2 mb-6"></div>
+                    <div id="char-spellslots" class="grid grid-cols-2 gap-2 mb-6"></div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Características de Classe e Raça</h3>
+                    <ul id="char-features" class="space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">
+                        <li class="text-gray-500 italic list-none">Vazio.</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold border-b border-gray-700 pb-2 mt-6 mb-4 text-gray-300">Magias e Conjurações</h3>
+                    <div id="spells-container" class="space-y-4">
+                        <div class="text-gray-500 italic text-sm">A carregar magias...</div>
+                    </div>
                 </div>
             </div>
 
@@ -160,6 +178,15 @@
                     <div class="flex gap-2">
                         <select id="add-inventory-select" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></select>
                         <button type="button" onclick="addInventoryItem()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow transition">+</button>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label class="text-gray-400 block mb-1">Magias e Conjurações Ativas</label>
+                    <ul id="edit-spells-list" class="bg-gray-900 p-2 rounded mb-2 space-y-1 text-gray-300 border border-gray-700 max-h-32 overflow-y-auto"></ul>
+                    <div class="flex gap-2">
+                        <select id="add-spell-select" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></select>
+                        <button type="button" onclick="addSpellItem()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow transition">+</button>
                     </div>
                 </div>
 
