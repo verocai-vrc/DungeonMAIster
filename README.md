@@ -28,4 +28,4 @@ Este documento acompanha o progresso de desenvolvimento do Motor TTRPG com IA (D
 - [x] Criar a rotina de encerramento de sessão e comando `/compact` (gera o resumo e limpa o chat ativo).
 - [x] Desenvolver a injeção dinâmica de contexto para a montagem dos Prompts base da IA.
 - [x] Implementar o sistema de "Skills/Tool Calling" do Mestre (ex: `modificar_hp_jogador`, `consultar_regras`).
-- [x] Adicionar suporte a carregamento e troca de módulos de campanha em tempo real (Roteiro RAG guiado por localização).
+- [x] Adicionar suporte a carregamento e troca de módulos de campanha em tempo real (Roteiro RAG guiado por localização).# mobileDungeonCard
