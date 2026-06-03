@@ -158,6 +158,13 @@ Resposta do Mestre:""",
                 return f"<div class='bg-gray-800 p-4 rounded border border-blue-500 text-blue-100 my-2 shadow-lg'>🎲 <b>Rolagem:</b> {result['expression']}<br><b>Dados:</b> [{rolls_str}] {mod_str} <br><div class='text-2xl font-bold text-green-400 mt-1'>Total = {result['total']}</div></div>"
             except Exception as e: return f"<div class='bg-red-900/50 p-3 rounded text-red-400 font-bold border border-red-800'>Erro na rolagem: {str(e)}</div>"
 
+        # Regista se o estado da ficha mudou, para o frontend só recarregar quando necessário
+        state_changed = {"v": False}
+        _orig_save = save_func
+        def save_func(s):
+            state_changed["v"] = True
+            _orig_save(s)
+
         docs = self.retriever.invoke(message)
         context = "\n".join([doc.page_content for doc in docs])
         history_text = "\n".join(self.chat_history[-10:]) if self.chat_history else "Nenhum histórico recente."
@@ -241,7 +248,8 @@ Resposta do Mestre:""",
                 
                 dex_mod = player_state.get('attributes', {}).get('dexterity', 10)
                 dex_mod = (dex_mod - 10) // 2
-                player_init = roll_dice(f"1d20+{dex_mod}")['total']
+                init_expr = f"1d20{'+' + str(dex_mod) if dex_mod > 0 else (str(dex_mod) if dex_mod < 0 else '')}"
+                player_init = roll_dice(init_expr)['total']
                 
                 initiatives = [{"name": player_state.get('name', 'Jogador'), "score": player_init}]
                 for enemy in enemies:
@@ -270,26 +278,28 @@ Resposta do Mestre:""",
             llm_response = re.sub(r'\[END_COMBAT\]', end_block, llm_response)
             self.chat_history.append("Sistema: O combate terminou.")
 
-        # Processamento de Recursos e Spell Slots
-        res_match = re.search(r'\[USE_RESOURCE:(.+?)\]', llm_response)
-        if res_match:
-            res_name = res_match.group(1).strip()
+        # Processamento de Recursos e Spell Slots (cada ocorrência é deduzida individualmente)
+        def _use_resource(m):
+            res_name = m.group(1).strip()
             if "resources" in player_state and res_name in player_state["resources"]:
                 player_state["resources"][res_name]["current"] = max(0, player_state["resources"][res_name]["current"] - 1)
                 save_func(player_state)
-                llm_response = re.sub(r'\[USE_RESOURCE:.+?\]', f"<div class='text-xs text-purple-400 font-bold'>⚡ Recurso Gasto: {res_name}</div>", llm_response)
+            return f"<div class='text-xs text-purple-400 font-bold'>⚡ Recurso Gasto: {res_name}</div>"
+        llm_response = re.sub(r'\[USE_RESOURCE:(.+?)\]', _use_resource, llm_response)
 
-        slot_match = re.search(r'\[USE_SPELL_SLOT:(\d+)\]', llm_response)
-        if slot_match:
-            lvl = slot_match.group(1).strip()
+        def _use_spell_slot(m):
+            lvl = m.group(1).strip()
             if "spell_slots" in player_state and lvl in player_state["spell_slots"]:
                 player_state["spell_slots"][lvl]["current"] = max(0, player_state["spell_slots"][lvl]["current"] - 1)
                 save_func(player_state)
-                llm_response = re.sub(r'\[USE_SPELL_SLOT:\d+\]', f"<div class='text-xs text-blue-400 font-bold'>✨ Spell Slot Gasto: Círculo {lvl}</div>", llm_response)
+            return f"<div class='text-xs text-blue-400 font-bold'>✨ Spell Slot Gasto: Círculo {lvl}</div>"
+        llm_response = re.sub(r'\[USE_SPELL_SLOT:(\d+)\]', _use_spell_slot, llm_response)
 
         # Processamento de Economia de Ação
         act_match = re.findall(r'\[USE_ACTION:(main|bonus|reaction)\]', llm_response)
         if act_match:
+            if not isinstance(player_state.get("action_economy"), dict):
+                player_state["action_economy"] = {"main": True, "bonus": True, "reaction": True}
             for act in act_match: player_state["action_economy"][act] = False
             save_func(player_state)
             llm_response = re.sub(r'\[USE_ACTION:(main|bonus|reaction)\]', "", llm_response)
@@ -313,5 +323,6 @@ Resposta do Mestre:""",
         llm_response = re.sub(r'\[NPC:(.+?)\](.*?)\[/NPC\]', npc_block, llm_response, flags=re.DOTALL)
 
         self.chat_history.extend([f"Jogador: {message}", f"Mestre: {llm_response}"])
-        html_res = f"{prefix_html}{llm_response.replace(chr(10), '<br>')}<br><br><details><summary class='text-xs text-gray-500 cursor-pointer'>Ver Regras/Contexto</summary><i class='text-gray-600 text-xs mt-2 block'>{context[:400]}...</i></details>"
+        state_marker = "<!--STATE_CHANGED-->" if state_changed["v"] else ""
+        html_res = f"{prefix_html}{llm_response.replace(chr(10), '<br>')}<br><br><details><summary class='text-xs text-gray-500 cursor-pointer'>Ver Regras/Contexto</summary><i class='text-gray-600 text-xs mt-2 block'>{context[:400]}...</i></details>{state_marker}"
         return html_res

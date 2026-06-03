@@ -32,7 +32,8 @@ function connectWS() {
     };
     ws.onmessage = (event) => {
         appendMessage('Mestre', event.data);
-        loadCharacter(true); // Puxa os dados atualizados (HP, CA, Inventário, etc) silenciosamente
+        // Só recarrega a ficha quando o backend sinaliza que o estado mudou (HP, CA, Inventário, etc)
+        if (event.data.includes('STATE_CHANGED')) loadCharacter(true);
     };
     ws.onclose = () => {
         document.getElementById('ws-status').textContent = 'Desconectado';
@@ -300,8 +301,15 @@ function updateAutoFeatures() {
         currentEditResources["Fúria"] = {max: rages, current: rages};
     }
     if (["Mago", "Clérigo", "Feiticeiro"].includes(cls)) {
-        const slots = [{}, {"1":2}, {"1":3}, {"1":4,"2":2}, {"1":4,"2":3}, {"1":4,"2":3,"3":2}];
-        const lvlSlots = slots[Math.min(lvl, 5)] || {"1":4,"2":3,"3":3,"4":1}; // Suporte básico
+        // Tabela oficial de espaços de magia (full caster), índice = nível do personagem (1-20)
+        const slots = [
+            {},
+            {"1":2}, {"1":3}, {"1":4,"2":2}, {"1":4,"2":3}, {"1":4,"2":3,"3":2},
+            {"1":4,"2":3,"3":3}, {"1":4,"2":3,"3":3,"4":1}, {"1":4,"2":3,"3":3,"4":2}, {"1":4,"2":3,"3":3,"4":3,"5":1}, {"1":4,"2":3,"3":3,"4":3,"5":2},
+            {"1":4,"2":3,"3":3,"4":3,"5":2,"6":1}, {"1":4,"2":3,"3":3,"4":3,"5":2,"6":1}, {"1":4,"2":3,"3":3,"4":3,"5":2,"6":1,"7":1}, {"1":4,"2":3,"3":3,"4":3,"5":2,"6":1,"7":1}, {"1":4,"2":3,"3":3,"4":3,"5":2,"6":1,"7":1,"8":1},
+            {"1":4,"2":3,"3":3,"4":3,"5":2,"6":1,"7":1,"8":1}, {"1":4,"2":3,"3":3,"4":3,"5":2,"6":1,"7":1,"8":1,"9":1}, {"1":4,"2":3,"3":3,"4":3,"5":3,"6":1,"7":1,"8":1,"9":1}, {"1":4,"2":3,"3":3,"4":3,"5":3,"6":2,"7":1,"8":1,"9":1}, {"1":4,"2":3,"3":3,"4":3,"5":3,"6":2,"7":2,"8":1,"9":1}
+        ];
+        const lvlSlots = slots[Math.min(Math.max(lvl, 1), 20)];
         Object.keys(lvlSlots).forEach(k => {
             currentEditSpellSlots[k] = {max: lvlSlots[k], current: lvlSlots[k]};
         });
@@ -367,7 +375,8 @@ function openEditModal(isNew) {
         document.getElementById('edit-str').value = d.attributes.strength; document.getElementById('edit-dex').value = d.attributes.dexterity; document.getElementById('edit-con').value = d.attributes.constitution;
         document.getElementById('edit-int').value = d.attributes.intelligence; document.getElementById('edit-wis').value = d.attributes.wisdom; document.getElementById('edit-cha').value = d.attributes.charisma;
         currentEditInventory = [...d.inventory]; updateInventoryUI(); currentEditSpells = d.spells ? [...d.spells] : []; updateSpellsUI(); lastAppliedRace = d.race; document.getElementById('edit-features').value = d.features.join(", ");
-        if (d.resources) currentEditResources = d.resources; if (d.spell_slots) currentEditSpellSlots = d.spell_slots;
+        currentEditResources = d.resources ? JSON.parse(JSON.stringify(d.resources)) : {};
+        currentEditSpellSlots = d.spell_slots ? JSON.parse(JSON.stringify(d.spell_slots)) : {};
     }
     document.getElementById('char-modal').classList.remove('hidden');
 }
