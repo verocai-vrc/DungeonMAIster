@@ -9,7 +9,7 @@ from backend.data_manager import (
     PDF_DIR, DB_DIR, ABILITIES_FILE, SPELLS_FILE, EQUIPMENT_FILE, RACES_FILE, CLASSES_FILE, BASE_DIR
 )
 from backend.ai_engine.master import AIGameMaster
-from backend.rag_system.ingest import ingest_single_pdf, ingest_rules_md
+from backend.rag_system.ingest import ingest_single_pdf, ingest_rules_md, ingest_pending_pdfs, register_pdf_in_manifest
 
 init_data_files()
 player_character_state = load_character()
@@ -18,6 +18,10 @@ ai_dm = AIGameMaster(DB_DIR)
 # Gera o Markdown das regras a partir do JSON e ingere-o no RAG (idempotente)
 print("A sincronizar o ruleset D&D 5e hardcoded com o RAG...")
 ingest_rules_md(ai_dm.db)
+
+# Ingere automaticamente qualquer PDF em pdf_modules/ que ainda não esteja memorizado
+print("A verificar módulos PDF pendentes...")
+ingest_pending_pdfs(ai_dm.db)
 app = FastAPI(title="DungeonMAIster API", description="Motor TTRPG com IA para Solo RPG")
 
 @app.get("/api/rules")
@@ -67,7 +71,8 @@ async def upload_module(file: UploadFile = File(...)):
         
     # 2. Converter PDF → Markdown limpo → chunks por cabeçalho → guardar no Chroma
     ingest_single_pdf(file_path, ai_dm.db)
-    
+    register_pdf_in_manifest(file_path)
+
     # 4. Avisar a memória da IA sobre a nova campanha
     ai_dm.chat_history.append(f"Sistema: O módulo de campanha '{file.filename}' foi carregado. O Mestre agora baseia-se nesta história.")
     

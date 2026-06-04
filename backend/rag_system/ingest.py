@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import hashlib
 from pathlib import Path
 
@@ -113,6 +114,67 @@ def ingest_rules_md(vector_store: Chroma, force: bool = False) -> int:
         f.write(digest)
 
     print(f"  [Regras] {total} chunks de regras ingeridos.")
+    return total
+
+
+# ---------------------------------------------------------------------------
+# Módulos PDF com persistência (manifest-based, idempotente entre arranques)
+# ---------------------------------------------------------------------------
+_MANIFEST_FILE = os.path.join(DB_DIR, ".modules_manifest")
+
+
+def _pdf_hash(pdf_path: str) -> str:
+    h = hashlib.sha256()
+    with open(pdf_path, "rb") as f:
+        for block in iter(lambda: f.read(65536), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def _load_manifest() -> dict:
+    if os.path.exists(_MANIFEST_FILE):
+        with open(_MANIFEST_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def _save_manifest(manifest: dict) -> None:
+    os.makedirs(DB_DIR, exist_ok=True)
+    with open(_MANIFEST_FILE, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2)
+
+
+def register_pdf_in_manifest(pdf_path: str) -> None:
+    """Regista um PDF no manifesto após ingestão bem-sucedida."""
+    manifest = _load_manifest()
+    manifest[os.path.basename(pdf_path)] = _pdf_hash(pdf_path)
+    _save_manifest(manifest)
+
+
+def ingest_pending_pdfs(vector_store: Chroma) -> int:
+    """
+    Ingere automaticamente qualquer PDF em PDF_DIR que ainda não esteja no manifesto
+    (ou cujo hash tenha mudado). Chamado no arranque para garantir persistência.
+    """
+    manifest = _load_manifest()
+    pdf_files = sorted(Path(PDF_DIR).glob("*.pdf"))
+    if not pdf_files:
+        return 0
+
+    total = 0
+    for pdf_path in pdf_files:
+        name = pdf_path.name
+        digest = _pdf_hash(str(pdf_path))
+        if manifest.get(name) == digest:
+            print(f"  [Módulos] '{name}' já ingerido — a saltar.")
+            continue
+        print(f"  [Módulos] A ingerir '{name}'...")
+        total += ingest_single_pdf(str(pdf_path), vector_store)
+        manifest[name] = digest
+
+    if total:
+        _save_manifest(manifest)
+        print(f"  [Módulos] {total} chunks de módulos adicionados.")
     return total
 
 
