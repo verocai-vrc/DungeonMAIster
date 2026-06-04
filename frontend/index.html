@@ -3,198 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DungeonMAIster - Solo RPG</title>
+    <title>DungeonMAIster — Grimório do Aventureiro</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Repinta a paleta inteira do Tailwind em tons de grimório.
+        // Como o main.js injeta classes utilitárias (gray-/blue-/purple-/red-…),
+        // redefinir as escalas faz toda a UI dinâmica herdar a estética — sem tocar no JS.
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"EB Garamond"', 'Georgia', 'serif'],
+                        display: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        gray:   { 100:'#f3ead1', 200:'#e6d8b4', 300:'#cdbf9c', 400:'#a8967a', 500:'#7c6c54', 600:'#4d3b28', 700:'#3a2c1c', 800:'#261c12', 900:'#1a130c', 950:'#120c07' },
+                        blue:   { 100:'#f7eccb', 200:'#f1dca6', 300:'#eccb82', 400:'#e6bb5c', 500:'#d9a441', 600:'#c08f30', 700:'#9c7224', 800:'#6b4d18', 900:'#473110' },
+                        yellow: { 400:'#e0903c' },
+                        purple: { 300:'#c8aee4', 600:'#7d5aa8', 800:'#4a3568', 900:'#2c1d3c' },
+                        green:  { 400:'#9dbd6a', 600:'#56763a', 700:'#46622e', 900:'#1d2e17' },
+                        red:    { 400:'#e0826f', 700:'#9e3b2e', 800:'#6b241a', 900:'#3c130f' },
+                        orange: { 600:'#b06a20', 700:'#8a5418', 900:'#37220f' },
+                        emerald:{ 600:'#3f7a55', 700:'#2f5e41' },
+                        indigo: { 700:'#454080', 900:'#1c183a' },
+                        pink:   { 700:'#8a3a5e', 900:'#3a1326' },
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* Personalização simples da barra de scroll para ambiente Dark Mode */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        :root{
+            --ink:        #1a130c;
+            --ink-deep:   #120c07;
+            --leather:    #261c12;
+            --leather-lt: #2f2417;
+            --brass:      #3a2c1c;
+            --gold:       #d9a441;
+            --gold-lt:    #e6bb5c;
+            --gold-pale:  #f1dca6;
+            --ember:      #e0903c;
+            --parchment:  #f3ead1;
+            --faded:      #a8967a;
+        }
+
+        *{ scrollbar-width: thin; scrollbar-color: var(--brass) var(--ink-deep); }
+
+        body{
+            background-color: var(--ink-deep);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 18% -5%,  rgba(217,164,65,0.14), transparent 60%),
+                radial-gradient(ellipse 70% 70% at 90% 108%, rgba(125,90,168,0.10), transparent 55%),
+                radial-gradient(ellipse 120% 120% at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 100%);
+        }
+
+        /* Grão de pergaminho — sobreposto a tudo, mas atravessável ao clique */
+        body::after{
+            content:""; position:fixed; inset:0; z-index:30; pointer-events:none;
+            opacity:0.045; mix-blend-mode:overlay;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        ::selection{ background: var(--gold); color: var(--ink-deep); }
+
+        ::-webkit-scrollbar { width: 9px; }
+        ::-webkit-scrollbar-track { background: var(--ink-deep); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--brass), #2a2014); border-radius: 6px; border:1px solid rgba(217,164,65,0.15); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+        /* ---------- Tipografia ---------- */
+        h1,h2,h3,h4{ font-family:'Cinzel', serif; letter-spacing:0.04em; }
+        .wordmark{ font-family:'Uncial Antiqua', 'Cinzel Decorative', serif; }
+        .runic{ font-family:'Cinzel', serif; letter-spacing:0.22em; text-transform:uppercase; }
+
+        .gold-text{ color:var(--gold-lt); text-shadow:0 0 14px rgba(217,164,65,0.35); }
+
+        /* ---------- Painéis de couro com cantos em filigrana ---------- */
+        .leather{
+            background:
+                linear-gradient(180deg, rgba(255,230,170,0.025), transparent 30%),
+                var(--leather);
+            box-shadow: inset 0 1px 0 rgba(255,225,160,0.05), inset 0 0 40px rgba(0,0,0,0.45);
+        }
+        .ornate{ position:relative; }
+        .ornate::before, .ornate::after{
+            content:"❧"; position:absolute; font-size:15px; color:var(--gold);
+            opacity:0.45; line-height:1; pointer-events:none;
+        }
+        .ornate::before{ top:7px; left:9px; transform:scaleX(-1); }
+        .ornate::after{ top:7px; right:9px; }
+
+        /* Régua ornamental */
+        .rule{ display:flex; align-items:center; gap:0.6rem; color:var(--faded); }
+        .rule::before, .rule::after{
+            content:""; flex:1; height:1px;
+            background:linear-gradient(90deg, transparent, rgba(217,164,65,0.5), transparent);
+        }
+        .rule span{ font-size:0.6rem; }
+
+        /* ---------- Abas (active state vem do switchTab → .text-blue-400) ---------- */
+        .tab-btn{ position:relative; font-family:'Cinzel', serif; letter-spacing:0.06em; transition:color .25s, background .25s; }
+        .tab-btn:hover{ background:rgba(217,164,65,0.06); color:var(--gold-pale); }
+        .tab-btn.text-blue-400{ text-shadow:0 0 12px rgba(217,164,65,0.5); }
+        .tab-btn.border-blue-500{ box-shadow:0 6px 14px -8px rgba(217,164,65,0.8); }
+
+        /* ---------- Mensagens do chat (innerHTML do main.js) ---------- */
+        #chat-history > div{
+            font-size:1.06rem; line-height:1.6; position:relative;
+            box-shadow:0 10px 26px -16px rgba(0,0,0,0.9);
+            animation: rise .5s cubic-bezier(.2,.7,.3,1) both;
+        }
+        /* Rótulo do locutor → versalete dourado */
+        #chat-history .font-bold.text-xs{
+            font-family:'Cinzel', serif !important; letter-spacing:0.16em;
+            text-transform:uppercase; opacity:1 !important; font-size:0.62rem !important;
+        }
+        /* Narração do Mestre (self-start, não system) ganha capitular sutil + filete */
+        #chat-history > div:not(.self-end):not(.self-center){
+            border-left:2px solid rgba(217,164,65,0.45) !important;
+        }
+
+        /* ---------- Inputs ---------- */
+        input, select, textarea{ font-family:'EB Garamond', serif; }
+        input:focus, select:focus{ box-shadow:0 0 0 2px rgba(217,164,65,0.35), 0 0 18px -4px rgba(217,164,65,0.4) !important; }
+
+        /* ---------- Botões com brilho de brasa ---------- */
+        .ember-btn{ position:relative; overflow:hidden; font-family:'Cinzel', serif; letter-spacing:0.05em; }
+        .ember-btn::after{
+            content:""; position:absolute; inset:0; transform:translateX(-120%);
+            background:linear-gradient(110deg, transparent 30%, rgba(255,240,200,0.35) 50%, transparent 70%);
+            transition:transform .6s;
+        }
+        .ember-btn:hover::after{ transform:translateX(120%); }
+
+        /* ---------- Cartão de identidade com moldura dupla ---------- */
+        .framed{
+            border:1px solid var(--brass);
+            box-shadow:inset 0 0 0 1px rgba(217,164,65,0.12), inset 0 0 30px rgba(0,0,0,0.4);
+        }
+
+        /* ---------- Tooltips de itens/magias ---------- */
+        #chat-history, .tip-host { isolation:isolate; }
+
+        /* ---------- Animações ---------- */
+        @keyframes rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+        @keyframes fadeDown{ from{ opacity:0; transform:translateY(-10px); } to{ opacity:1; transform:translateY(0); } }
+        @keyframes wash{ from{ opacity:0; transform:translateY(22px) scale(.995); } to{ opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes flicker{ 0%,100%{ opacity:0.85; } 45%{ opacity:1; } 55%{ opacity:0.7; } 70%{ opacity:0.95; } }
+
+        .col-left  { animation: wash .8s ease both .05s; }
+        .col-right { animation: wash .8s ease both .18s; }
+        .reveal-1{ animation: fadeDown .6s ease both .35s; }
+        .reveal-2{ animation: fadeDown .6s ease both .5s; }
+        .candle{ animation: flicker 5s ease-in-out infinite; }
+
+        @media (prefers-reduced-motion: reduce){
+            *{ animation:none !important; }
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 h-screen flex overflow-hidden font-sans">
+<body class="bg-gray-950 text-gray-100 h-screen flex overflow-hidden font-sans">
 
-                <div id="char-actions" class="hidden border-t border-gray-700 pt-4">
-                    <h3 class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Ações neste Turno (Combate)</h3>
-                    <div class="flex gap-2 text-center text-xs font-bold uppercase">
-                        <div id="act-main" class="flex-1 bg-green-700 text-white p-2 rounded shadow-sm transition">Principal</div>
-                        <div id="act-bonus" class="flex-1 bg-green-700 text-white p-2 rounded shadow-sm transition">Bônus</div>
-                        <div id="act-react" class="flex-1 bg-green-700 text-white p-2 rounded shadow-sm transition">Reação</div>
-                    </div>
-                </div>
-
-    <!-- PAINEL ESQUERDO: MUNDO (CHAT) - 65% -->
-    <div class="w-[65%] flex flex-col border-r border-gray-700">
-        <!-- Header Chat -->
-        <div class="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-blue-400">O Mundo (Chat)</h1>
-            <span id="ws-status" class="text-sm text-red-400">Desconectado</span>
+    <!-- ===================== PAINEL ESQUERDO: A CRÔNICA (CHAT) ===================== -->
+    <div class="col-left w-[62%] flex flex-col border-r-2 border-gray-700 relative">
+        <!-- Cabeçalho -->
+        <div class="leather px-6 py-4 border-b-2 border-gray-700 flex justify-between items-end reveal-1">
+            <div>
+                <div class="runic text-[0.58rem] text-gray-500 mb-1">Crônica viva · Sessão em curso</div>
+                <h1 class="text-2xl gold-text candle">O Mundo</h1>
+            </div>
+            <span id="ws-status" class="runic text-[0.62rem] text-red-400 border border-red-800 px-3 py-1 rounded-sm">Desconectado</span>
         </div>
 
-        <!-- Histórico do Chat -->
-        <div id="chat-history" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-950 flex flex-col">
-            <div class="text-gray-500 italic text-center my-4">A tua aventura começa aqui...</div>
+        <!-- Histórico -->
+        <div id="chat-history" class="flex-1 overflow-y-auto px-7 py-6 space-y-5 flex flex-col tip-host"
+             style="background:
+                radial-gradient(circle at 50% -10%, rgba(217,164,65,0.05), transparent 45%),
+                var(--ink-deep);">
+            <div class="self-center my-8 max-w-md text-center">
+                <div class="text-3xl gold-text opacity-70 mb-3">⁂</div>
+                <p class="italic text-gray-400 text-lg leading-relaxed">Aqui começa a tua lenda. Acende a conexão na aba <span class="text-blue-400">Sistema</span> e que o Mestre desperte…</p>
+            </div>
         </div>
 
-        <!-- Input de Ação -->
-        <div class="p-4 bg-gray-800 border-t border-gray-700 flex gap-2">
-            <input type="text" id="chat-input" class="flex-1 bg-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Descreve a tua ação..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold transition shadow">Enviar</button>
+        <!-- Entrada de ação -->
+        <div class="leather px-6 py-4 border-t-2 border-gray-700 reveal-2">
+            <div class="rule mb-3"><span class="runic">Declara a tua ação</span></div>
+            <div class="flex gap-3">
+                <input type="text" id="chat-input"
+                    class="flex-1 bg-gray-950 text-gray-100 px-4 py-3 rounded-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-lg"
+                    placeholder="Empunho a tocha e avanço pela cripta…" onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()"
+                    class="ember-btn bg-blue-600 hover:bg-blue-500 text-gray-950 px-7 py-3 rounded-sm font-bold uppercase tracking-wider shadow-lg">Selar</button>
+            </div>
         </div>
     </div>
 
-    <!-- PAINEL DIREITO: MECÂNICA (FICHA) - 35% -->
-    <div class="w-[35%] flex flex-col bg-gray-900">
-        <!-- Tabs de Navegação -->
-        <div class="flex border-b border-gray-700 bg-gray-800">
-            <button onclick="switchTab('sheet')" class="flex-1 py-3 text-center font-semibold focus:outline-none border-b-2 border-blue-500 text-blue-400" id="btn-sheet">Ficha</button>
-            <button onclick="switchTab('inventory')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-inventory">Inventário</button>
-            <button onclick="switchTab('abilities')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-abilities">Habilidades</button>
-            <button onclick="switchTab('system')" class="flex-1 py-3 text-center font-semibold hover:bg-gray-700 focus:outline-none border-b-2 border-transparent text-gray-400 transition" id="btn-system">Sistema</button>
+    <!-- ===================== PAINEL DIREITO: O GRIMÓRIO (FICHA) ===================== -->
+    <div class="col-right w-[38%] flex flex-col bg-gray-900 relative">
+
+        <!-- Banner de Combate (mostrado pelo main.js quando in_combat) -->
+        <div id="char-actions" class="hidden bg-red-900/40 border-b-2 border-red-800 px-5 py-3">
+            <h3 class="runic text-[0.6rem] text-red-400 mb-2 flex items-center gap-2"><span class="candle">⚔</span> Economia de Ação · Turno</h3>
+            <div class="flex gap-2 text-center text-xs">
+                <div id="act-main"  class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Principal</div>
+                <div id="act-bonus" class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Bônus</div>
+                <div id="act-react" class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Reação</div>
+            </div>
         </div>
 
-        <!-- Conteúdo das Tabs -->
-        <div class="flex-1 overflow-y-auto p-5">
-            
-            <!-- ABA: FICHA -->
+        <!-- Marca + Abas -->
+        <div class="leather border-b-2 border-gray-700">
+            <div class="px-5 pt-4 pb-3 text-center">
+                <div class="wordmark text-xl gold-text leading-none">DungeonMAIster</div>
+                <div class="runic text-[0.5rem] text-gray-500 mt-1">Grimório do Aventureiro</div>
+            </div>
+            <div class="flex">
+                <button onclick="switchTab('sheet')"     id="btn-sheet"     class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-blue-500 text-blue-400">Ficha</button>
+                <button onclick="switchTab('inventory')" id="btn-inventory" class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Tesouro</button>
+                <button onclick="switchTab('abilities')" id="btn-abilities" class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Dons</button>
+                <button onclick="switchTab('system')"    id="btn-system"    class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Sistema</button>
+            </div>
+        </div>
+
+        <!-- Conteúdo das abas -->
+        <div class="flex-1 overflow-y-auto p-5"
+             style="background:radial-gradient(circle at 100% 0%, rgba(125,90,168,0.06), transparent 40%);">
+
+            <!-- ===== ABA: FICHA ===== -->
             <div id="tab-sheet" class="space-y-6">
-                <!-- Botões de Ação Ficha -->
-                <div class="flex gap-2">
-                    <button onclick="openEditModal(false)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded shadow text-sm font-semibold transition">Editar Ficha</button>
-                    <button onclick="openEditModal(true)" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded shadow text-sm font-semibold transition">Nova Ficha</button>
+                <div class="flex gap-3">
+                    <button onclick="openEditModal(false)" class="ember-btn flex-1 bg-blue-600 hover:bg-blue-500 text-gray-950 py-2.5 rounded-sm text-sm font-bold uppercase tracking-wider shadow">Editar</button>
+                    <button onclick="openEditModal(true)"  class="ember-btn flex-1 bg-emerald-600 hover:bg-emerald-700 text-gray-100 py-2.5 rounded-sm text-sm font-bold uppercase tracking-wider shadow">Forjar Novo</button>
                 </div>
 
-                <div class="bg-gray-800 p-4 rounded border border-gray-700 shadow-sm">
-                    <h2 class="text-xl font-bold text-blue-400" id="char-name">Desconhecido</h2>
-                    <p class="text-sm text-gray-400">Raça: <span id="char-race">-</span> | Classe: <span id="char-class">-</span> | Nível: <span id="char-level">-</span> (<span id="char-xp">-</span> XP)</p>
-                    <p class="text-sm text-gray-400 mt-1">📍 Local: <span id="char-location" class="text-yellow-400">-</span></p>
+                <!-- Identidade -->
+                <div class="leather framed ornate p-5 pt-7 rounded-sm text-center">
+                    <h2 class="text-2xl gold-text" id="char-name">Desconhecido</h2>
+                    <p class="text-sm text-gray-300 mt-2">
+                        <span id="char-race">—</span> · <span id="char-class">—</span> ·
+                        Nível <span class="text-blue-400 font-semibold" id="char-level">—</span>
+                        <span class="text-gray-500">(<span id="char-xp">—</span> XP)</span>
+                    </p>
+                    <p class="text-sm text-gray-400 mt-2 flex items-center justify-center gap-1">
+                        <span>📍</span> <span id="char-location" class="text-yellow-400 italic">—</span>
+                    </p>
                 </div>
-                
+
+                <!-- Vitalidade -->
                 <div class="flex gap-4 text-center">
-                    <div class="flex-1 bg-red-900/30 border border-red-800/50 p-3 rounded shadow-sm">
-                        <div class="text-xs text-red-400 uppercase font-bold tracking-wider">Pontos de Vida</div>
-                        <div class="text-2xl font-bold mt-1" id="char-hp">- / -</div>
+                    <div class="flex-1 bg-red-900/30 border border-red-800/50 p-4 rounded-sm framed">
+                        <div class="runic text-[0.55rem] text-red-400">Pontos de Vida</div>
+                        <div class="text-3xl font-display font-bold mt-1 text-gray-100" id="char-hp">— / —</div>
                     </div>
-                    <div class="flex-1 bg-blue-900/30 border border-blue-800/50 p-3 rounded shadow-sm">
-                        <div class="text-xs text-blue-400 uppercase font-bold tracking-wider">Classe de Armadura</div>
-                        <div class="text-2xl font-bold mt-1" id="char-ac">-</div>
+                    <div class="flex-1 bg-blue-900/30 border border-blue-800/50 p-4 rounded-sm framed">
+                        <div class="runic text-[0.55rem] text-blue-400">Classe de Armadura</div>
+                        <div class="text-3xl font-display font-bold mt-1 text-gray-100" id="char-ac">—</div>
                     </div>
                 </div>
 
+                <!-- Atributos -->
                 <div>
-                    <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Atributos</h3>
+                    <div class="rule mb-4"><span class="runic">Atributos</span></div>
                     <div class="grid grid-cols-2 gap-3" id="char-attributes">
-                        <div class="text-gray-500 italic text-sm col-span-2">Por favor, carrega a ficha na aba Sistema.</div>
+                        <div class="text-gray-500 italic text-sm col-span-2 text-center">Carrega a tua ficha na aba Sistema.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ABA: INVENTÁRIO -->
-            <div id="tab-inventory" class="hidden space-y-4">
-                <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Equipamento</h3>
-                <ul id="char-inventory" class="space-y-2 text-gray-300 bg-gray-800 p-4 rounded border border-gray-700">
-                    <li class="text-gray-500 italic text-sm list-none">Vazio.</li>
+            <!-- ===== ABA: INVENTÁRIO ===== -->
+            <div id="tab-inventory" class="hidden space-y-4 tip-host">
+                <div class="rule mb-2"><span class="runic">Tesouro & Equipamento</span></div>
+                <ul id="char-inventory" class="space-y-2 text-gray-200 leather p-4 rounded-sm framed">
+                    <li class="text-gray-500 italic text-sm list-none">As tuas algibeiras estão vazias.</li>
                 </ul>
             </div>
 
-            <!-- ABA: HABILIDADES -->
-            <div id="tab-abilities" class="hidden space-y-4">
+            <!-- ===== ABA: HABILIDADES ===== -->
+            <div id="tab-abilities" class="hidden space-y-6 tip-host">
                 <div>
-                    <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Recursos e Espaços de Magia</h3>
-                    <div id="char-resources" class="grid grid-cols-2 gap-2 mb-6"></div>
-                    <div id="char-spellslots" class="grid grid-cols-2 gap-2 mb-6"></div>
+                    <div class="rule mb-4"><span class="runic">Recursos & Conjurações</span></div>
+                    <div id="char-resources" class="grid grid-cols-2 gap-2 mb-3"></div>
+                    <div id="char-spellslots" class="grid grid-cols-2 gap-2"></div>
                 </div>
 
                 <div>
-                    <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Características de Classe e Raça</h3>
-                    <ul id="char-features" class="space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">
-                        <li class="text-gray-500 italic list-none">Vazio.</li>
+                    <div class="rule mb-4"><span class="runic">Traços de Classe & Linhagem</span></div>
+                    <ul id="char-features" class="space-y-1 text-sm text-gray-300 leather p-4 rounded-sm framed">
+                        <li class="text-gray-500 italic list-none">Nenhum traço registado.</li>
                     </ul>
                 </div>
-                
+
                 <div>
-                    <h3 class="font-bold border-b border-gray-700 pb-2 mt-6 mb-4 text-gray-300">Magias e Conjurações</h3>
+                    <div class="rule mb-4"><span class="runic">Magias Memorizadas</span></div>
                     <div id="spells-container" class="space-y-4">
-                        <div class="text-gray-500 italic text-sm">A carregar magias...</div>
+                        <div class="text-gray-500 italic text-sm">A folhear o grimório…</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ABA: SISTEMA -->
+            <!-- ===== ABA: SISTEMA ===== -->
             <div id="tab-system" class="hidden space-y-4">
-                <h3 class="font-bold border-b border-gray-700 pb-2 mb-4 text-gray-300">Conexões do Servidor</h3>
-                <button onclick="connectWS()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded font-medium transition shadow-sm">1. Conectar ao Mestre IA (WebSocket)</button>
-                <button onclick="loadCharacter()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded font-medium transition shadow-sm">2. Carregar Ficha (REST API)</button>
-                
-                <h3 class="font-bold border-b border-gray-700 pb-2 mt-6 mb-4 text-gray-300">Campanha</h3>
+                <div class="rule mb-2"><span class="runic">Rituais de Conexão</span></div>
+                <button onclick="connectWS()" class="ember-btn w-full bg-green-600 hover:bg-green-700 text-gray-100 px-4 py-3.5 rounded-sm font-semibold tracking-wide shadow text-left flex justify-between items-center">
+                    <span>I · Despertar o Mestre IA</span> <span class="text-lg candle">🔥</span>
+                </button>
+                <button onclick="loadCharacter()" class="ember-btn w-full bg-purple-600 hover:bg-purple-800 text-gray-100 px-4 py-3.5 rounded-sm font-semibold tracking-wide shadow text-left flex justify-between items-center">
+                    <span>II · Invocar a Ficha</span> <span class="text-lg">📜</span>
+                </button>
+
+                <div class="rule mb-2 mt-7"><span class="runic">Tomos da Campanha</span></div>
                 <input type="file" id="module-upload" accept="application/pdf" class="hidden" onchange="uploadModule(event)">
-                <button onclick="document.getElementById('module-upload').click()" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded font-medium transition shadow-sm flex justify-between items-center">
-                    <span>3. Carregar Módulo (PDF)</span> <span class="text-xl">📖</span>
+                <button onclick="document.getElementById('module-upload').click()" class="ember-btn w-full bg-orange-600 hover:bg-orange-700 text-gray-100 px-4 py-3.5 rounded-sm font-semibold tracking-wide shadow text-left flex justify-between items-center">
+                    <span>III · Memorizar Módulo (PDF)</span> <span class="text-lg">📖</span>
                 </button>
             </div>
 
         </div>
     </div>
 
-    <!-- MODAL EDITAR/NOVA FICHA -->
-    <div id="char-modal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center z-50">
-        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 w-96 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <h2 class="text-xl font-bold text-blue-400 mb-4" id="modal-title">Editar Ficha</h2>
+    <!-- ===================== MODAL: FORJAR / EDITAR FICHA ===================== -->
+    <div id="char-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+        <div class="leather framed ornate p-6 pt-8 rounded-sm w-[26rem] max-h-[92vh] overflow-y-auto shadow-2xl border-2 border-gray-700">
+            <h2 class="text-2xl gold-text text-center mb-1" id="modal-title">Editar Ficha</h2>
+            <div class="rule mb-5"><span class="runic">Inscrição no Grimório</span></div>
+
+            <!-- input fantasma exigido pelo openEditModal (id 'edit-inventory') -->
+            <input type="hidden" id="edit-inventory">
+
             <div class="space-y-3 text-sm">
-                <div><label class="text-gray-400 block mb-1">Nome</label><input id="edit-name" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div><label class="runic text-[0.55rem] text-gray-400 block mb-1">Nome</label><input id="edit-name" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 <div class="flex gap-2">
-                    <div class="flex-1"><label class="text-gray-400 block mb-1">Raça</label>
-                        <select id="edit-race" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500">
-                        </select>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Linhagem</label>
+                        <select id="edit-race" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
                     </div>
-                    <div class="flex-1"><label class="text-gray-400 block mb-1">Classe</label>
-                        <select id="edit-class" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500">
-                        </select>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Classe</label>
+                        <select id="edit-class" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
                     </div>
-                    <div class="w-20"><label class="text-gray-400 block mb-1">Nível</label><input type="number" id="edit-level" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div class="w-24"><label class="text-gray-400 block mb-1">XP</label><input type="number" id="edit-xp" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="w-16"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Nível</label><input type="number" id="edit-level" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="w-20"><label class="runic text-[0.55rem] text-gray-400 block mb-1">XP</label><input type="number" id="edit-xp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 </div>
-                <div><label class="text-gray-400 block mb-1">Localização</label><input id="edit-location" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                
+                <div><label class="runic text-[0.55rem] text-gray-400 block mb-1">Localização</label><input id="edit-location" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+
                 <div class="flex gap-2 mt-4">
-                    <div class="flex-1"><label class="text-gray-400 block mb-1">HP Máx</label><input type="number" id="edit-max-hp" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div class="flex-1"><label class="text-gray-400 block mb-1">HP Atual</label><input type="number" id="edit-current-hp" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div class="flex-1"><label class="text-gray-400 block mb-1">CA</label><input type="number" id="edit-ac" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">HP Máx</label><input type="number" id="edit-max-hp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">HP Atual</label><input type="number" id="edit-current-hp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">CA</label><input type="number" id="edit-ac" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2 mt-4">
-                    <div><label class="text-gray-400 block mb-1">FOR</label><input type="number" id="edit-str" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="text-gray-400 block mb-1">DES</label><input type="number" id="edit-dex" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="text-gray-400 block mb-1">CON</label><input type="number" id="edit-con" onchange="updateAutoFeatures()" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="text-gray-400 block mb-1">INT</label><input type="number" id="edit-int" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="text-gray-400 block mb-1">SAB</label><input type="number" id="edit-wis" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="text-gray-400 block mb-1">CAR</label><input type="number" id="edit-cha" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div class="rule my-4"><span class="runic">Atributos</span></div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div><label class="runic text-[0.55rem] text-red-400 block mb-1">FOR</label><input type="number" id="edit-str" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-green-400 block mb-1">DES</label><input type="number" id="edit-dex" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-orange-600 block mb-1">CON</label><input type="number" id="edit-con" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-blue-400 block mb-1">INT</label><input type="number" id="edit-int" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-indigo-700 block mb-1">SAB</label><input type="number" id="edit-wis" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-pink-700 block mb-1">CAR</label><input type="number" id="edit-cha" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 </div>
 
-                <div class="mt-4">
-                    <label class="text-gray-400 block mb-1">Inventário</label>
-                    <ul id="edit-inventory-list" class="bg-gray-900 p-2 rounded mb-2 space-y-1 text-gray-300 border border-gray-700 max-h-32 overflow-y-auto"></ul>
+                <div class="mt-5">
+                    <label class="runic text-[0.55rem] text-gray-400 block mb-1">Inventário</label>
+                    <ul id="edit-inventory-list" class="bg-gray-950 p-2 rounded-sm mb-2 space-y-1 text-gray-200 border border-gray-700 max-h-32 overflow-y-auto"></ul>
                     <div class="flex gap-2">
-                        <select id="add-inventory-select" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></select>
-                        <button type="button" onclick="addInventoryItem()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow transition">+</button>
+                        <select id="add-inventory-select" class="flex-1 bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
+                        <button type="button" onclick="addInventoryItem()" class="bg-blue-600 hover:bg-blue-500 text-gray-950 px-4 py-2 rounded-sm font-bold shadow">+</button>
                     </div>
                 </div>
 
                 <div class="mt-4">
-                    <label class="text-gray-400 block mb-1">Magias e Conjurações Ativas</label>
-                    <ul id="edit-spells-list" class="bg-gray-900 p-2 rounded mb-2 space-y-1 text-gray-300 border border-gray-700 max-h-32 overflow-y-auto"></ul>
+                    <label class="runic text-[0.55rem] text-gray-400 block mb-1">Magias & Conjurações</label>
+                    <ul id="edit-spells-list" class="bg-gray-950 p-2 rounded-sm mb-2 space-y-1 text-gray-200 border border-gray-700 max-h-32 overflow-y-auto"></ul>
                     <div class="flex gap-2">
-                        <select id="add-spell-select" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></select>
-                        <button type="button" onclick="addSpellItem()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow transition">+</button>
+                        <select id="add-spell-select" class="flex-1 bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
+                        <button type="button" onclick="addSpellItem()" class="bg-blue-600 hover:bg-blue-500 text-gray-950 px-4 py-2 rounded-sm font-bold shadow">+</button>
                     </div>
                 </div>
 
-                <div class="mt-4"><label class="text-gray-400 block mb-1">Habilidades (Automático ou Editável)</label><input id="edit-features" class="w-full bg-gray-700 text-gray-300 px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div class="mt-4"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Habilidades (auto / editável)</label><input id="edit-features" class="w-full bg-gray-950 text-gray-300 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
             </div>
+
             <div class="flex gap-3 mt-6">
-                <button onclick="saveCharacter()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold shadow transition">Salvar</button>
-                <button onclick="closeEditModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 rounded font-bold shadow transition">Cancelar</button>
+                <button onclick="saveCharacter()" class="ember-btn flex-1 bg-green-600 hover:bg-green-700 text-gray-100 py-2.5 rounded-sm font-bold uppercase tracking-wider shadow">Selar no Grimório</button>
+                <button onclick="closeEditModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-gray-100 py-2.5 rounded-sm font-bold uppercase tracking-wider shadow">Descartar</button>
             </div>
         </div>
     </div>

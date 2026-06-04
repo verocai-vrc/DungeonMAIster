@@ -1,3 +1,4 @@
+import os
 import re
 from backend.dnd_rules.dice import roll_dice
 from langchain_community.vectorstores import Chroma
@@ -19,6 +20,7 @@ class AIGameMaster:
         self.chat_history = []
         self.session_summary = "A aventura acabou de começar. Nenhum evento anterior para resumir."
         self.campaign_lore = "- O mundo é perigoso e cheio de magia.\n- Tharok procura redenção pelos erros do seu passado."
+        self.core_rules = self._load_core_rules()
         
         self.prompt = PromptTemplate(
             template="""És um Mestre de Jogo (Dungeon Master) de D&D 5e experiente, narrativo e criativo. 
@@ -62,6 +64,9 @@ REGRA IMPORTANTE PARA DIÁLOGOS DE NPCs:
 Sempre que um NPC ou criatura falar diretamente com o jogador, envolve a sua fala com as tags [NPC:Nome do Personagem] e [/NPC].
 Exemplo: [NPC:Goblin] Quem ousa entrar na minha caverna?! [/NPC]
 
+Regras Essenciais de D&D 5e (Referência Rápida e Obrigatória):
+{core_rules}
+
 Ficha de Personagem Atual (A Única Verdade):
 {character_sheet}
 
@@ -81,8 +86,19 @@ Histórico recente da conversa:
 Ação do Jogador: {action}
 
 Resposta do Mestre:""",
-            input_variables=["character_sheet", "lore", "location", "session_summary", "context", "chat_history", "action"]
+            input_variables=["core_rules", "character_sheet", "lore", "location", "session_summary", "context", "chat_history", "action"]
         )
+
+    def _load_core_rules(self) -> str:
+        """Carrega a referência essencial de regras (sempre injetada no prompt)."""
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        path = os.path.join(base_dir, "DATA", "rules_md", "combat_reference.md")
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"Aviso: referência de regras não encontrada em {path}")
+            return "Usa as regras padrão de D&D 5e."
     
     def process_message(self, message: str, player_state: dict, save_func) -> str:
         if message.strip().lower() == "/help":
@@ -189,7 +205,7 @@ Resposta do Mestre:""",
         if player_state.get("in_combat"):
             char_sheet_str += f"Status: EM COMBATE\nAções Atuais Livres: {act_str}\nOrdem de Iniciativa: {', '.join(player_state.get('initiative_order', []))}"
 
-        formatted_prompt = self.prompt.format(character_sheet=char_sheet_str, lore=self.campaign_lore, location=player_state["location"], session_summary=self.session_summary, context=context, chat_history=history_text, action=message)
+        formatted_prompt = self.prompt.format(core_rules=self.core_rules, character_sheet=char_sheet_str, lore=self.campaign_lore, location=player_state["location"], session_summary=self.session_summary, context=context, chat_history=history_text, action=message)
         llm_response = self.llm.invoke(formatted_prompt)
         
         hp_match = re.search(r'\[MODIFY_HP:([+-]?\d+)\]', llm_response)

@@ -9,12 +9,15 @@ from backend.data_manager import (
     PDF_DIR, DB_DIR, ABILITIES_FILE, SPELLS_FILE, EQUIPMENT_FILE, RACES_FILE, CLASSES_FILE, BASE_DIR
 )
 from backend.ai_engine.master import AIGameMaster
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from backend.rag_system.ingest import ingest_single_pdf, ingest_rules_md
 
 init_data_files()
 player_character_state = load_character()
 ai_dm = AIGameMaster(DB_DIR)
+
+# Gera o Markdown das regras a partir do JSON e ingere-o no RAG (idempotente)
+print("A sincronizar o ruleset D&D 5e hardcoded com o RAG...")
+ingest_rules_md(ai_dm.db)
 app = FastAPI(title="DungeonMAIster API", description="Motor TTRPG com IA para Solo RPG")
 
 @app.get("/api/rules")
@@ -62,15 +65,8 @@ async def upload_module(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
         
-    # 2. Ler e processar o PDF
-    loader = PyPDFLoader(file_path)
-    docs = loader.load()
-    
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    chunks = text_splitter.split_documents(docs)
-    
-    # 3. Adicionar à base de dados RAG (Chroma)
-    ai_dm.db.add_documents(chunks)
+    # 2. Converter PDF → Markdown limpo → chunks por cabeçalho → guardar no Chroma
+    ingest_single_pdf(file_path, ai_dm.db)
     
     # 4. Avisar a memória da IA sobre a nova campanha
     ai_dm.chat_history.append(f"Sistema: O módulo de campanha '{file.filename}' foi carregado. O Mestre agora baseia-se nesta história.")

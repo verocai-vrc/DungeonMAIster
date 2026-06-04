@@ -4,12 +4,16 @@ import time
 import webbrowser
 import subprocess
 
+# Força saída UTF-8 no Windows para evitar erros com caracteres especiais
+if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
 def start():
     # Determina os diretórios com base na localização deste script
     base_dir = os.path.abspath(os.path.dirname(__file__))
     
     print("========================================")
-    print("⚔️  Iniciando o DungeonMAIster... ⚔️")
+    print(">>>  Iniciando o DungeonMAIster...")
     print("========================================")
     print("Subindo o servidor backend (FastAPI)...")
     
