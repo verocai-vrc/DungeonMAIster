@@ -1,161 +1,161 @@
-# **Documento Mestre: Motor TTRPG com IA (D\&D 5e)**
+# **Master Document: AI-Powered TTRPG Engine (D\&D 5e)**
 
-## **1\. Visão Geral do Projeto**
+## **1\. Project Overview**
 
-**Objetivo:** Desenvolver um motor de RPG de mesa (TTRPG) para um jogador (Solo RPG), focado estritamente no sistema de regras do *Dungeons & Dragons 5ª Edição (D\&D 5e)*.
+**Goal:** Develop a tabletop RPG (TTRPG) engine for a single player (Solo RPG), focused strictly on the rules system of *Dungeons & Dragons 5th Edition (D\&D 5e)*.
 
-**Papel da IA:** Atuar em tempo real como o Mestre de Jogo (Dungeon Master \- DM), organizando a narrativa, gerenciando encontros, diálogos, e validando testes de atributos e combates com base nas regras do D\&D 5e.
+**The AI's Role:** Act in real time as the Game Master (Dungeon Master \- DM), organizing the narrative, managing encounters, dialogue, and validating ability checks and combat based on the D\&D 5e rules.
 
-**Modelo de Distribuição:** Aplicação Web Local (Roda no navegador do utilizador, mas o servidor é hospedado na própria máquina, garantindo privacidade, zero lag de rede externa e facilitando expansão futura para multiplayer).
+**Distribution Model:** Local Web Application (runs in the user's browser, but the server is hosted on the user's own machine, ensuring privacy, zero external network lag, and easing future expansion to multiplayer).
 
-## **2\. Stack Tecnológica (Arquitetura)**
+## **2\. Technology Stack (Architecture)**
 
-### **2.1 Backend (Motor e Lógica)**
+### **2.1 Backend (Engine and Logic)**
 
-* **Linguagem Principal:** Python 3.x  
-* **Servidor Web:** FastAPI  
-* **Comunicação:** WebSockets (Para comunicação em tempo real e bidirecional entre o jogador e o Mestre de IA, simulando digitação contínua).
+* **Primary Language:** Python 3.x  
+* **Web Server:** FastAPI  
+* **Communication:** WebSockets (for real-time, bidirectional communication between the player and the AI Game Master, simulating continuous typing).
 
-### **2.2 Frontend (Interface do Utilizador)**
+### **2.2 Frontend (User Interface)**
 
 * **Base:** HTML5, CSS3, Vanilla JavaScript.  
-* **Estilização:** Tailwind CSS (via CDN inicialmente) para uma interface limpa, rápida e responsiva, dividida em painéis (Chat, Ficha de Personagem, Rolagem de Dados).
+* **Styling:** Tailwind CSS (via CDN initially) for a clean, fast and responsive interface, split into panels (Chat, Character Sheet, Dice Rolling).
 
-### **2.3 Módulo de Inteligência Artificial e RAG**
+### **2.3 Artificial Intelligence and RAG Module**
 
-* **Orquestrador de IA:** LangChain ou LlamaIndex (Para criar o pipeline de pensamento do Mestre).  
-* **Processamento Local (Principal):** Ollama (Rodando modelos focados em roleplay e instrução, como Llama-3 ou Mistral, garantindo custo zero e execução offline).  
-* **Processamento em Nuvem (Fallback):** Integração com APIs externas (ex: OpenAI, Google Gemini) acionadas mediante inserção de chave API nas configurações do sistema.  
-* **Banco de Dados Vetorial (RAG):** ChromaDB ou FAISS.  
-  * **Propósito:** Armazenar os manuais de regras do D\&D 5e e módulos de aventuras (PDFs). A IA consultará este banco antes de responder para evitar alucinações e aplicar regras corretamente.
+* **AI Orchestrator:** LangChain or LlamaIndex (to build the Game Master's thinking pipeline).  
+* **Local Processing (Primary):** Ollama (running roleplay- and instruction-focused models such as Llama-3 or Mistral, ensuring zero cost and offline execution).  
+* **Cloud Processing (Fallback):** Integration with external APIs (e.g. OpenAI, Google Gemini) triggered by entering an API key in the system settings.  
+* **Vector Database (RAG):** ChromaDB or FAISS.  
+  * **Purpose:** Store the D\&D 5e rulebooks and adventure modules (PDFs). The AI will query this database before answering to avoid hallucinations and apply rules correctly.
 
-## **3\. Estrutura de Pastas Sugerida**
+## **3\. Suggested Folder Structure**
 
-Para facilitar a implementação via agentes de IA, o projeto deve seguir esta estrutura modular:
+To ease implementation via AI agents, the project should follow this modular structure:
 
-meu\_rpg\_ai/  
+my\_rpg\_ai/  
 ├── backend/  
-│   ├── main.py              \# Ponto de entrada do FastAPI e rotas WebSocket  
-│   ├── ai\_engine/           \# Lógica do Mestre (Langchain, Prompts, Conexão Ollama/API)  
-│   ├── dnd\_rules/           \# Lógica hardcoded de D\&D (cálculo de modificadores, dano)  
-│   └── rag\_system/          \# Processamento de PDFs e consultas ao ChromaDB  
+│   ├── main.py              \# FastAPI entry point and WebSocket routes  
+│   ├── ai\_engine/           \# Game Master logic (Langchain, Prompts, Ollama/API connection)  
+│   ├── dnd\_rules/           \# Hardcoded D\&D logic (modifier and damage calculation)  
+│   └── rag\_system/          \# PDF processing and ChromaDB queries  
 ├── frontend/  
-│   ├── index.html           \# Interface principal do jogador  
-│   ├── css/                 \# Estilos customizados  
-│   └── js/                  \# Lógica do painel (WebSockets, atualização da ficha)  
+│   ├── index.html           \# Main player interface  
+│   ├── css/                 \# Custom styles  
+│   └── js/                  \# Panel logic (WebSockets, sheet updates)  
 ├── data/                      
-│   ├── prompts/             \# Ficheiros Markdown (.md) com as personalidades do Mestre  
-│   ├── saves/               \# Ficheiros JSON com os dados das campanhas salvas  
-│   ├── pdf\_modules/         \# PDFs originais de aventuras e suplementos  
-│   └── db/                  \# Banco de dados vetorial (ChromaDB)  
-├── docs/                    \# Documentação do projeto (Incluindo este GDD)  
-└── requirements.txt         \# Lista de dependências do Python
+│   ├── prompts/             \# Markdown (.md) files with the Game Master's personalities  
+│   ├── saves/               \# JSON files with saved campaign data  
+│   ├── pdf\_modules/         \# Original adventure and supplement PDFs  
+│   └── db/                  \# Vector database (ChromaDB)  
+├── docs/                    \# Project documentation (including this GDD)  
+└── requirements.txt         \# List of Python dependencies
 
-## **4\. Funcionalidades Principais (Roadmap de Implementação)**
+## **4\. Core Features (Implementation Roadmap)**
 
-### **Fase 1: Fundação do Chat (Comunicação)**
+### **Phase 1: Chat Foundation (Communication)**
 
-* \[ \] Configurar servidor FastAPI básico.  
-* \[ \] Criar a interface HTML/JS com área de chat e campo de input.  
-* \[ \] Estabelecer conexão via WebSocket.  
-* \[ \] Implementar a classe AIGameMaster para receber mensagens e devolver respostas textuais simples.
+* \[ \] Set up a basic FastAPI server.  
+* \[ \] Create the HTML/JS interface with a chat area and an input field.  
+* \[ \] Establish the WebSocket connection.  
+* \[ \] Implement the AIGameMaster class to receive messages and return simple text responses.
 
-### **Fase 2: O Motor RAG (Conhecimento do Mestre)**
+### **Phase 2: The RAG Engine (The Game Master's Knowledge)**
 
-* \[ \] Implementar script para ler PDFs de regras e aventuras.  
-* \[ \] Quebrar o texto em fragmentos (chunks) e criar embeddings.  
-* \[ \] Salvar os embeddings no ChromaDB local com metadados (Regra vs. Aventura).  
-* \[ \] Configurar a IA para buscar o contexto no banco de dados vetorial.
+* \[ \] Implement a script to read rule and adventure PDFs.  
+* \[ \] Break the text into fragments (chunks) and create embeddings.  
+* \[ \] Save the embeddings in the local ChromaDB with metadata (Rule vs. Adventure).  
+* \[ \] Configure the AI to fetch context from the vector database.
 
-### **Fase 3: Ficha de Personagem e Sistema d20**
+### **Phase 3: Character Sheet and d20 System**
 
-* \[ \] Criar estrutura de dados (JSON/Modelos Pydantic) para a Ficha de D\&D 5e.  
-* \[ \] Implementar sistema no frontend para exibir e editar a ficha.  
-* \[ \] Desenvolver o "Motor de Dados" (Dice Roller) bidirecional.
+* \[ \] Create the data structure (JSON/Pydantic models) for the D\&D 5e Sheet.  
+* \[ \] Implement a frontend system to display and edit the sheet.  
+* \[ \] Develop the bidirectional "Dice Roller" engine.
 
-### **Fase 4: Gestão de Memória e Expansões**
+### **Phase 4: Memory Management and Expansions**
 
-* \[ \] Implementar a rotina de encerramento e compactação de sessão (/compact).  
-* \[ \] Criar o injetor de contexto (Montagem dinâmica do Prompt Inicial da Sessão).  
-* \[ \] Implementar carregamento e troca de Módulos de Campanha (Módulo Ativo).
+* \[ \] Implement the session-closing and compaction routine (/compact).  
+* \[ \] Create the context injector (dynamic assembly of the Session's Initial Prompt).  
+* \[ \] Implement loading and switching of Campaign Modules (Active Module).
 
-## **5\. Gerenciamento de Prompts e Personalidade (O Cérebro do Mestre)**
+## **5\. Prompt and Personality Management (The Game Master's Brain)**
 
-### **5.1. Abordagem de Ficheiros Markdown (.md)**
+### **5.1. Markdown (.md) File Approach**
 
-Os prompts base (System Prompts) serão armazenados na pasta data/prompts/ como ficheiros Markdown. O backend lerá o conteúdo destes ficheiros no arranque do servidor.
+The base prompts (System Prompts) will be stored in the data/prompts/ folder as Markdown files. The backend will read the contents of these files at server startup.
 
-### **5.2. "Skills" do Mestre (Tool Calling / Function Calling)**
+### **5.2. The Game Master's "Skills" (Tool Calling / Function Calling)**
 
-O Mestre será instruído de que tem à sua disposição as seguintes ferramentas:
+The Game Master will be instructed that it has the following tools at its disposal:
 
-1. **consultar\_regras(topico: str)**: Pesquisa no ChromaDB.  
-2. **modificar\_hp\_jogador(valor: int, tipo: str)**: Atualiza a Ficha do Personagem (dano/cura).  
-3. **adicionar\_inventario(item: str)**: Injeta itens no JSON da Ficha.  
-4. **rolar\_dados\_ocultos(expressao: str)**: Permite rolar dados em segredo.  
-5. **avancar\_capitulo(novo\_local: str)**: Atualiza o status do Roteiro RAG.
+1. **consult\_rules(topic: str)**: Searches ChromaDB.  
+2. **modify\_player\_hp(value: int, type: str)**: Updates the Character Sheet (damage/healing).  
+3. **add\_inventory(item: str)**: Injects items into the Sheet's JSON.  
+4. **roll\_hidden\_dice(expression: str)**: Allows rolling dice in secret.  
+5. **advance\_chapter(new\_location: str)**: Updates the RAG script status.
 
-## **6\. Estrutura da Ficha de Personagem (D\&D 5e)**
+## **6\. Character Sheet Structure (D\&D 5e)**
 
-A ficha do personagem será a fonte da verdade matemática do jogo, armazenada em JSON e gerida por Modelos Pydantic no backend. O motor calculará modificadores de forma automática: Modificador \= floor((Valor \- 10\) / 2).
+The character sheet will be the game's mathematical source of truth, stored in JSON and managed by Pydantic Models on the backend. The engine will calculate modifiers automatically: Modifier \= floor((Score \- 10\) / 2).
 
-## **7\. Sistema de Rolagem de Dados e Interação com a IA**
+## **7\. Dice Rolling System and AI Interaction**
 
-### **7.1 Rolagem Solicitada pela IA (Mestre)**
+### **7.1 AI-Requested Roll (Game Master)**
 
-A IA gera a tag oculta \[REQUEST\_ROLL:furtividade\]. O frontend esconde a tag, gera um botão, o jogador clica, rola o dado matematicamente e devolve \<SYSTEM\_ROLL\> Furtividade: 18 para a IA processar.
+The AI generates the hidden tag \[REQUEST\_ROLL:stealth\]. The frontend hides the tag, generates a button, the player clicks, the die is rolled mathematically, and \<SYSTEM\_ROLL\> Stealth: 18 is returned to the AI to process.
 
-### **7.2 Rolagem Voluntária do Jogador (Ação Proativa)**
+### **7.2 Player's Voluntary Roll (Proactive Action)**
 
-O jogador clica em "Atacar" na interface. O frontend rola o dado de ataque e dano e envia simultaneamente com a descrição de texto para o Mestre narrar o resultado.
+The player clicks "Attack" in the interface. The frontend rolls the attack and damage dice and sends them simultaneously with the text description for the Game Master to narrate the result.
 
-## **8\. Sistema de Memória e Salvamento da Campanha (Saves)**
+## **8\. Memory System and Campaign Saving (Saves)**
 
-A memória é dividida em três camadas para otimizar o uso de tokens (Context Limit):
+Memory is divided into three layers to optimize token usage (Context Limit):
 
-1. **Memória de Curto Prazo (Sessão Atual):** Log das últimas N mensagens.  
-2. **Memória Episódica (Resumos):** Narrativa gerada após o comando /compact.  
-3. **Memória Semântica (Lore):** Fatos isolados (NPCs, Missões).  
-   *Comando /compact:* Encerra a sessão, pede à IA para resumir o texto, guarda os dados no JSON e limpa o chat ativo.
+1. **Short-Term Memory (Current Session):** Log of the last N messages.  
+2. **Episodic Memory (Summaries):** Narrative generated after the /compact command.  
+3. **Semantic Memory (Lore):** Isolated facts (NPCs, Quests).  
+   *The /compact command:* Closes the session, asks the AI to summarize the text, stores the data in JSON, and clears the active chat.
 
-## **9\. Sistema RAG e Ingestão de Aventuras (Módulos em PDF)**
+## **9\. RAG System and Adventure Ingestion (PDF Modules)**
 
-O sistema ingere PDFs categorizando Chunks com metadados (ex: type: plot\_location).
+The system ingests PDFs, categorizing chunks with metadata (e.g. type: plot\_location).
 
-A IA acompanha a Localização Atual do jogador e usa-a como filtro no ChromaDB, garantindo que lê a parte certa da aventura (ex: A Taverna) sem alucinar o final (ex: O Castelo do Boss). A IA é instruída a improvisar coerentemente nas áreas cinzas onde o PDF não tem informação.
+The AI tracks the player's Current Location and uses it as a filter in ChromaDB, ensuring it reads the right part of the adventure (e.g. The Tavern) without hallucinating the ending (e.g. The Boss's Castle). The AI is instructed to improvise coherently in the gray areas where the PDF has no information.
 
-## **10\. Layout da Interface (UX/UI)**
+## **10\. Interface Layout (UX/UI)**
 
-A interface web (SPA \- Single Page Application) deve ser desenhada com Tailwind CSS e dividida de forma limpa:
+The web interface (SPA \- Single Page Application) should be designed with Tailwind CSS and divided cleanly:
 
-* **Painel Esquerdo (65% do ecrã):** Dedicado ao "Mundo". Contém o histórico do Chat e a barra de input para descrever ações.  
-* **Painel Direito (35% do ecrã):** Dedicado à "Mecânica". Um sistema de *Tabs* (Separadores) alternando entre:  
-  * **Aba Ficha:** Atributos, HP, CA e Perícias.  
-  * **Aba Inventário:** Magias, armas e itens.  
-  * **Aba Sistema:** Botões para carregar PDFs, mudar de API ou encerrar sessão (/compact).
+* **Left Panel (65% of the screen):** Dedicated to the "World". Contains the Chat history and the input bar to describe actions.  
+* **Right Panel (35% of the screen):** Dedicated to the "Mechanics". A system of *Tabs* alternating between:  
+  * **Sheet Tab:** Attributes, HP, AC and Skills.  
+  * **Inventory Tab:** Spells, weapons and items.  
+  * **System Tab:** Buttons to load PDFs, switch API or close the session (/compact).
 
-## **11\. O Loop Principal do Jogo (Data Flow)**
+## **11\. The Main Game Loop (Data Flow)**
 
-Sempre que o jogador digita uma ação, este é o ciclo exato que ocorre em milissegundos:
+Whenever the player types an action, this is the exact cycle that happens in milliseconds:
 
-1. Frontend envia ação via WebSocket \-\>  
-2. Backend recebe. Identifica a Localização Atual do jogador \-\>  
-3. RAG System pesquisa o ChromaDB usando a ação \+ localização e extrai o contexto \-\>  
-4. AI Engine monta o prompt: \[Ficha JSON\] \+ \[Memória\] \+ \[Contexto RAG\] \+ \[Ação\] \-\>  
-5. LLM (Ollama/API) processa e decide se precisa acionar uma Tool (Skill) \-\>  
-6. Backend executa a Tool (ex: atualizar vida) se necessário, e reencaminha a narrativa final via WebSocket \-\>  
-7. Frontend imprime o texto no ecrã (efeito máquina de escrever) e atualiza a interface gráfica.
+1. Frontend sends the action via WebSocket \-\>  
+2. Backend receives it. Identifies the player's Current Location \-\>  
+3. RAG System searches ChromaDB using the action \+ location and extracts the context \-\>  
+4. AI Engine assembles the prompt: \[Sheet JSON\] \+ \[Memory\] \+ \[RAG Context\] \+ \[Action\] \-\>  
+5. LLM (Ollama/API) processes and decides whether it needs to trigger a Tool (Skill) \-\>  
+6. Backend executes the Tool (e.g. update health) if needed, and forwards the final narrative via WebSocket \-\>  
+7. Frontend prints the text on screen (typewriter effect) and updates the graphical interface.
 
-## **12\. Instruções de Arranque para o Agente de IA (Vibe-Coding)**
+## **12\. Startup Instructions for the AI Agent (Vibe-Coding)**
 
-**Olá, Agente Autônomo / Copilot\!**
+**Hello, Autonomous Agent / Copilot\!**
 
-Se estás a ler este documento para iniciar a implementação, o teu objetivo é **estritamente seguir a Fase 1**.
+If you are reading this document to begin the implementation, your goal is to **strictly follow Phase 1**.
 
-Por favor, começa por:
+Please start by:
 
-1. Criar a estrutura básica de diretórios descrita na Secção 3\.  
-2. Escrever o backend/main.py com um servidor FastAPI configurado para WebSockets.  
-3. Escrever um protótipo em frontend/index.html com os painéis referidos na Secção 10\.  
-4. Implementar um echo simples: Tudo o que o jogador digitar no chat deve ser devolvido pelo servidor (ainda sem IA real, apenas para testar a ligação WebSocket).  
-   Aguarda o *feedback* do utilizador antes de avançar para a integração com o Ollama/LangChain.
+1. Creating the basic directory structure described in Section 3\.  
+2. Writing backend/main.py with a FastAPI server configured for WebSockets.  
+3. Writing a prototype in frontend/index.html with the panels mentioned in Section 10\.  
+4. Implementing a simple echo: everything the player types in the chat should be returned by the server (still without real AI, just to test the WebSocket connection).  
+   Wait for the user's *feedback* before moving on to the Ollama/LangChain integration.

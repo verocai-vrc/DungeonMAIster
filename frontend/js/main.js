@@ -6,7 +6,7 @@ let currentEditResources = {};
 let currentEditSpellSlots = {};
 let lastAppliedRace = null;
 
-// --- SISTEMA DE TABS ---
+// --- TAB SYSTEM ---
 function switchTab(tabId) {
     ['sheet', 'inventory', 'abilities', 'system'].forEach(id => {
         document.getElementById(`tab-${id}`).classList.add('hidden');
@@ -21,24 +21,24 @@ function switchTab(tabId) {
 // --- WEBSOCKETS (CHAT) ---
 function connectWS() {
     if (ws && ws.readyState === WebSocket.OPEN) {
-        appendMessage('Sistema', 'Já estás conectado ao servidor.');
+        appendMessage('System', 'You are already connected to the server.');
         return;
     }
     ws = new WebSocket("ws://localhost:8000/ws");
     ws.onopen = () => {
-        document.getElementById('ws-status').textContent = 'Conectado';
+        document.getElementById('ws-status').textContent = 'Connected';
         document.getElementById('ws-status').className = 'text-sm text-green-400 font-bold';
-        appendMessage('Sistema', 'Conexão estabelecida com o servidor DungeonMAIster.');
+        appendMessage('System', 'Connection established with the DungeonMAIster server.');
     };
     ws.onmessage = (event) => {
-        appendMessage('Mestre', event.data);
-        // Só recarrega a ficha quando o backend sinaliza que o estado mudou (HP, CA, Inventário, etc)
+        appendMessage('Game Master', event.data);
+        // Only reload the sheet when the backend signals that the state changed (HP, AC, Inventory, etc)
         if (event.data.includes('STATE_CHANGED')) loadCharacter(true);
     };
     ws.onclose = () => {
-        document.getElementById('ws-status').textContent = 'Desconectado';
+        document.getElementById('ws-status').textContent = 'Disconnected';
         document.getElementById('ws-status').className = 'text-sm text-red-400 font-bold';
-        appendMessage('Sistema', 'A conexão com o servidor foi perdida.');
+        appendMessage('System', 'The connection to the server was lost.');
     };
 }
 
@@ -47,9 +47,9 @@ function sendMessage() {
     const message = input.value.trim();
     if (!message) return;
     if (!ws || ws.readyState !== WebSocket.OPEN) {
-        alert("Por favor, conecta-te ao Mestre IA primeiro na aba 'Sistema'."); return;
+        alert("Please connect to the AI Game Master first in the 'System' tab."); return;
     }
-    appendMessage('Jogador', message);
+    appendMessage('Player', message);
     ws.send(message);
     input.value = '';
 }
@@ -59,24 +59,24 @@ function handleKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
 function appendMessage(sender, text) {
     const history = document.getElementById('chat-history');
     const div = document.createElement('div');
-    const isPlayer = sender === 'Jogador';
-    const isSystem = sender === 'Sistema';
-    
+    const isPlayer = sender === 'Player';
+    const isSystem = sender === 'System';
+
     if (!isPlayer && !isSystem) {
         const rollRegex = /\[REQUEST_ROLL(?:.*?)?\]/g;
         text = text.replace(rollRegex, () => {
             const uniqueId = 'roll-desc-' + Math.random().toString(36).substr(2, 9);
             return `
             <div class="mt-4 border-t border-gray-700 pt-3 space-y-2">
-                <p class="text-xs text-gray-400 uppercase font-bold">O Mestre solicitou um teste. Como queres agir?</p>
-                <input type="text" id="${uniqueId}" placeholder="Ex: Tento intimidar com força..." class="w-full bg-gray-900 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500 text-sm">
+                <p class="text-xs text-gray-400 uppercase font-bold">The Game Master requested a check. How do you want to act?</p>
+                <input type="text" id="${uniqueId}" placeholder="e.g. I try to intimidate with force..." class="w-full bg-gray-900 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:border-blue-500 text-sm">
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-1">
-                    <button onclick="sendAttrRoll('FOR', '${uniqueId}')" class="bg-red-900/80 hover:bg-red-700 text-white py-1 rounded text-xs font-bold transition">FOR</button>
-                    <button onclick="sendAttrRoll('DES', '${uniqueId}')" class="bg-green-900/80 hover:bg-green-700 text-white py-1 rounded text-xs font-bold transition">DES</button>
+                    <button onclick="sendAttrRoll('STR', '${uniqueId}')" class="bg-red-900/80 hover:bg-red-700 text-white py-1 rounded text-xs font-bold transition">STR</button>
+                    <button onclick="sendAttrRoll('DEX', '${uniqueId}')" class="bg-green-900/80 hover:bg-green-700 text-white py-1 rounded text-xs font-bold transition">DEX</button>
                     <button onclick="sendAttrRoll('CON', '${uniqueId}')" class="bg-orange-900/80 hover:bg-orange-700 text-white py-1 rounded text-xs font-bold transition">CON</button>
                     <button onclick="sendAttrRoll('INT', '${uniqueId}')" class="bg-blue-900/80 hover:bg-blue-700 text-white py-1 rounded text-xs font-bold transition">INT</button>
-                    <button onclick="sendAttrRoll('SAB', '${uniqueId}')" class="bg-indigo-900/80 hover:bg-indigo-700 text-white py-1 rounded text-xs font-bold transition">SAB</button>
-                    <button onclick="sendAttrRoll('CAR', '${uniqueId}')" class="bg-pink-900/80 hover:bg-pink-700 text-white py-1 rounded text-xs font-bold transition">CAR</button>
+                    <button onclick="sendAttrRoll('WIS', '${uniqueId}')" class="bg-indigo-900/80 hover:bg-indigo-700 text-white py-1 rounded text-xs font-bold transition">WIS</button>
+                    <button onclick="sendAttrRoll('CHA', '${uniqueId}')" class="bg-pink-900/80 hover:bg-pink-700 text-white py-1 rounded text-xs font-bold transition">CHA</button>
                 </div>
             </div>`;
         });
@@ -89,26 +89,26 @@ function appendMessage(sender, text) {
 }
 
 function sendRoll(expr) {
-    if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Por favor, conecta-te ao Mestre IA."); return; }
+    if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Please connect to the AI Game Master."); return; }
     ws.send(`/roll ${expr}`);
 }
 
 function sendAttrRoll(attr, inputId) {
-    if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Por favor, conecta-te ao Mestre IA."); return; }
+    if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Please connect to the AI Game Master."); return; }
     const descInput = document.getElementById(inputId);
     const desc = descInput ? descInput.value.trim() : "";
-    
-    const displayMsg = desc ? `Ação com ${attr}: ${desc}` : `Faço um teste de ${attr}.`;
-    appendMessage('Jogador', displayMsg);
-    
+
+    const displayMsg = desc ? `Action with ${attr}: ${desc}` : `I make a ${attr} check.`;
+    appendMessage('Player', displayMsg);
+
     ws.send(`/roll${attr} ${desc}`);
-    
+
     if (descInput) descInput.disabled = true;
 }
 
 function quickRoll(name, isAttribute = false, mod = 0) {
     let expr = '1d20';
-    if (isAttribute) { expr = `1d20${mod >= 0 ? '+' + mod : mod}`; } 
+    if (isAttribute) { expr = `1d20${mod >= 0 ? '+' + mod : mod}`; }
     else {
         const desc = (dndRules && dndRules.descriptions && dndRules.descriptions[name]) ? dndRules.descriptions[name] : "";
         const match = desc.match(/(\d+d\d+(?:\s*[+-]\s*\d+)?)/);
@@ -120,7 +120,7 @@ function quickRoll(name, isAttribute = false, mod = 0) {
 }
 
 function renderTooltipItem(name) {
-    const desc = (dndRules && dndRules.descriptions && dndRules.descriptions[name]) ? dndRules.descriptions[name] : "Descrição não definida.";
+    const desc = (dndRules && dndRules.descriptions && dndRules.descriptions[name]) ? dndRules.descriptions[name] : "No description available.";
     return `<li class="relative group w-max list-none mb-1">
         <span onclick="quickRoll('${name.replace(/'/g, "\\'")}', false)" class="inline-flex items-center gap-2 cursor-pointer"><span class="text-blue-500 text-xs hover:text-blue-400">✦</span><span class="border-b border-dashed border-gray-500 hover:text-blue-300 transition">${name}</span></span>
         <div class="absolute left-6 top-full mt-1 hidden group-hover:block w-64 bg-gray-950 text-gray-300 text-xs rounded p-3 shadow-xl border border-gray-700 z-[60] pointer-events-none">
@@ -132,31 +132,31 @@ function renderTooltipItem(name) {
 async function loadCharacter(silent = false) {
     try {
         const response = await fetch("http://localhost:8000/api/character");
-        if (!response.ok) throw new Error("Erro de rede");
+        if (!response.ok) throw new Error("Network error");
         const data = await response.json();
         currentCharacterData = data;
-        
+
         document.getElementById('char-name').textContent = data.name;
         document.getElementById('char-race').textContent = data.race;
         document.getElementById('char-class').textContent = data.character_class;
         document.getElementById('char-level').textContent = data.level;
         document.getElementById('char-xp').textContent = data.xp !== undefined ? data.xp : 0;
-        document.getElementById('char-location').textContent = data.location + (data.in_combat ? " ⚔️ (Em Combate)" : "");
+        document.getElementById('char-location').textContent = data.location + (data.in_combat ? " ⚔️ (In Combat)" : "");
         document.getElementById('char-hp').textContent = `${data.current_hp} / ${data.max_hp}`;
         document.getElementById('char-ac').textContent = data.armor_class;
 
         const attrDiv = document.getElementById('char-attributes');
-        attrDiv.innerHTML = ''; 
+        attrDiv.innerHTML = '';
         const attrs = [
-            { name: "FOR", val: data.attributes.strength, mod: data.attributes.str_mod },
-            { name: "DES", val: data.attributes.dexterity, mod: data.attributes.dex_mod },
+            { name: "STR", val: data.attributes.strength, mod: data.attributes.str_mod },
+            { name: "DEX", val: data.attributes.dexterity, mod: data.attributes.dex_mod },
             { name: "CON", val: data.attributes.constitution, mod: data.attributes.con_mod },
             { name: "INT", val: data.attributes.intelligence, mod: data.attributes.int_mod },
-            { name: "SAB", val: data.attributes.wisdom, mod: data.attributes.wis_mod },
-            { name: "CAR", val: data.attributes.charisma, mod: data.attributes.cha_mod }
+            { name: "WIS", val: data.attributes.wisdom, mod: data.attributes.wis_mod },
+            { name: "CHA", val: data.attributes.charisma, mod: data.attributes.cha_mod }
         ];
         attrs.forEach(a => {
-            attrDiv.innerHTML += `<div onclick="quickRoll('${a.name}', true, ${a.mod})" class="bg-gray-800 p-3 border border-gray-700 rounded flex justify-between items-center cursor-pointer hover:bg-gray-700 transition" title="Rolar Teste de ${a.name}"><span class="font-bold text-gray-400 pointer-events-none">${a.name}</span><div class="text-right pointer-events-none"><span class="text-xl font-semibold text-gray-200">${a.val}</span><span class="text-sm text-gray-500 ml-2">(${a.mod >= 0 ? '+'+a.mod : a.mod})</span></div></div>`;
+            attrDiv.innerHTML += `<div onclick="quickRoll('${a.name}', true, ${a.mod})" class="bg-gray-800 p-3 border border-gray-700 rounded flex justify-between items-center cursor-pointer hover:bg-gray-700 transition" title="Roll ${a.name} Check"><span class="font-bold text-gray-400 pointer-events-none">${a.name}</span><div class="text-right pointer-events-none"><span class="text-xl font-semibold text-gray-200">${a.val}</span><span class="text-sm text-gray-500 ml-2">(${a.mod >= 0 ? '+'+a.mod : a.mod})</span></div></div>`;
         });
 
         const actDiv = document.getElementById('char-actions');
@@ -174,32 +174,32 @@ async function loadCharacter(silent = false) {
                 resContainer.innerHTML += `<div class="bg-gray-800 p-2 text-sm rounded border border-gray-700 flex justify-between items-center"><span>${k}</span> <span class="font-bold text-blue-400 bg-gray-900 px-2 py-1 rounded">${data.resources[k].current} / ${data.resources[k].max}</span></div>`;
             });
         }
-        
+
         const slotsContainer = document.getElementById('char-spellslots');
         slotsContainer.innerHTML = '';
         if (data.spell_slots && Object.keys(data.spell_slots).length > 0) {
             Object.keys(data.spell_slots).forEach(k => {
-                slotsContainer.innerHTML += `<div class="bg-purple-900/40 p-2 text-sm rounded border border-purple-800/50 flex justify-between items-center"><span class="text-purple-300">Slot Nível ${k}</span> <span class="font-bold text-purple-300 bg-gray-900 px-2 py-1 rounded">${data.spell_slots[k].current} / ${data.spell_slots[k].max}</span></div>`;
+                slotsContainer.innerHTML += `<div class="bg-purple-900/40 p-2 text-sm rounded border border-purple-800/50 flex justify-between items-center"><span class="text-purple-300">Spell Slot Level ${k}</span> <span class="font-bold text-purple-300 bg-gray-900 px-2 py-1 rounded">${data.spell_slots[k].current} / ${data.spell_slots[k].max}</span></div>`;
             });
         }
 
         const invUl = document.getElementById('char-inventory');
         invUl.innerHTML = data.inventory.map(item => renderTooltipItem(item)).join('');
-        if(data.inventory.length === 0) invUl.innerHTML = '<li class="text-gray-500 italic text-sm p-1 list-none">Vazio.</li>';
+        if(data.inventory.length === 0) invUl.innerHTML = '<li class="text-gray-500 italic text-sm p-1 list-none">Empty.</li>';
 
         const spellsContainer = document.getElementById('spells-container');
         if (data.spells && data.spells.length > 0) {
             spellsContainer.innerHTML = `<ul class="space-y-1 text-sm text-gray-400 bg-gray-800 p-3 rounded border border-gray-700 shadow-inner">${data.spells.map(spell => renderTooltipItem(spell)).join('')}</ul>`;
-        } else { spellsContainer.innerHTML = '<div class="text-gray-500 italic text-sm">Nenhuma magia na ficha.</div>'; }
+        } else { spellsContainer.innerHTML = '<div class="text-gray-500 italic text-sm">No spells on the sheet.</div>'; }
 
         const featsUl = document.getElementById('char-features');
         featsUl.innerHTML = data.features.map(feat => renderTooltipItem(feat)).join('');
-        if(data.features.length === 0) featsUl.innerHTML = '<li class="text-gray-500 italic list-none">Nenhuma característica.</li>';
+        if(data.features.length === 0) featsUl.innerHTML = '<li class="text-gray-500 italic list-none">No features.</li>';
 
         if (!silent) switchTab('sheet');
-    } catch (error) { 
-        console.error(error); 
-        if (!silent) alert("Erro ao carregar a ficha. Verifica o backend."); 
+    } catch (error) {
+        console.error(error);
+        if (!silent) alert("Error loading the sheet. Check the backend.");
     }
 }
 
@@ -223,25 +223,25 @@ async function fetchRules() {
             if (dndRules.spells && Object.keys(dndRules.spells).length > 0) {
                 Object.keys(dndRules.spells).forEach(level => {
                     const optgroup = document.createElement('optgroup');
-                    optgroup.label = `Círculo ${level}`;
+                    optgroup.label = `Level ${level}`;
                     dndRules.spells[level].forEach(spell => { optgroup.appendChild(new Option(spell, spell)); });
                     spellSelect.appendChild(optgroup);
                 });
             }
         }
-    } catch (error) { console.error("Erro ao carregar as regras:", error); }
+    } catch (error) { console.error("Error loading the rules:", error); }
 }
 window.addEventListener('DOMContentLoaded', async () => {
     await fetchRules();
-    loadCharacter(true); // Carrega a ficha após as regras para garantir as descrições
+    loadCharacter(true); // Load the sheet after the rules to ensure the descriptions are available
 });
 
 function updateInventoryUI() {
     const list = document.getElementById('edit-inventory-list');
-    list.innerHTML = currentEditInventory.map((item, index) => 
+    list.innerHTML = currentEditInventory.map((item, index) =>
         `<li class="flex justify-between items-center bg-gray-800 p-1 px-2 rounded"><span>${item}</span><button type="button" onclick="removeInventoryItem(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 text-lg leading-none">&times;</button></li>`
     ).join('');
-    if (currentEditInventory.length === 0) list.innerHTML = '<li class="text-gray-500 italic text-sm p-1">Inventário vazio.</li>';
+    if (currentEditInventory.length === 0) list.innerHTML = '<li class="text-gray-500 italic text-sm p-1">Inventory empty.</li>';
 }
 
 function addInventoryItem() {
@@ -252,10 +252,10 @@ function removeInventoryItem(index) { currentEditInventory.splice(index, 1); upd
 
 function updateSpellsUI() {
     const list = document.getElementById('edit-spells-list');
-    list.innerHTML = currentEditSpells.map((item, index) => 
+    list.innerHTML = currentEditSpells.map((item, index) =>
         `<li class="flex justify-between items-center bg-gray-800 p-1 px-2 rounded"><span>${item}</span><button type="button" onclick="removeSpellItem(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 text-lg leading-none">&times;</button></li>`
     ).join('');
-    if (currentEditSpells.length === 0) list.innerHTML = '<li class="text-gray-500 italic text-sm p-1">Sem magias.</li>';
+    if (currentEditSpells.length === 0) list.innerHTML = '<li class="text-gray-500 italic text-sm p-1">No spells.</li>';
 }
 
 function addSpellItem() {
@@ -268,13 +268,13 @@ function updateAutoFeatures() {
     if (!dndRules) return;
     currentEditResources = {};
     currentEditSpellSlots = {};
-    
+
     const race = document.getElementById('edit-race').value;
     const cls = document.getElementById('edit-class').value;
     const lvl = parseInt(document.getElementById('edit-level').value) || 1;
     const attrKeys = { "strength": "str", "dexterity": "dex", "constitution": "con", "intelligence": "int", "wisdom": "wis", "charisma": "cha" };
     let autoFeats = [];
-    
+
     const raceData = dndRules.races[race];
     if (raceData) {
         if (lastAppliedRace !== race) {
@@ -295,13 +295,13 @@ function updateAutoFeatures() {
         }
         if (raceData.features) autoFeats.push(...raceData.features);
     }
-    
-    if (cls === "Bárbaro") {
+
+    if (cls === "Barbarian") {
         let rages = lvl >= 6 ? 4 : (lvl >= 3 ? 3 : 2);
-        currentEditResources["Fúria"] = {max: rages, current: rages};
+        currentEditResources["Rage"] = {max: rages, current: rages};
     }
-    if (["Mago", "Clérigo", "Feiticeiro"].includes(cls)) {
-        // Tabela oficial de espaços de magia (full caster), índice = nível do personagem (1-20)
+    if (["Wizard", "Cleric", "Sorcerer"].includes(cls)) {
+        // Official full-caster spell slot table, index = character level (1-20)
         const slots = [
             {},
             {"1":2}, {"1":3}, {"1":4,"2":2}, {"1":4,"2":3}, {"1":4,"2":3,"3":2},
@@ -317,14 +317,14 @@ function updateAutoFeatures() {
 
     const classData = dndRules.classes[cls];
     if (classData) {
-        if (classData.proficiencies) autoFeats.push(`Perícias: ${classData.proficiencies.join(", ")}`);
+        if (classData.proficiencies) autoFeats.push(`Skills: ${classData.proficiencies.join(", ")}`);
         if (classData.features) {
             for (let i = 1; i <= lvl; i++) {
                 if (classData.features[i]) autoFeats.push(...classData.features[i]);
             }
         }
     }
-    if (lvl > 3) autoFeats.push(`Mais habilidades da Classe ${cls} nível ${lvl}`);
+    if (lvl > 3) autoFeats.push(`More ${cls} class features at level ${lvl}`);
     document.getElementById('edit-features').value = autoFeats.join(", ");
     const con = parseInt(document.getElementById('edit-con').value) || 10;
     const conMod = Math.floor((con - 10) / 2);
@@ -343,8 +343,8 @@ function updateAutoFeatures() {
         currentEditInventory.forEach(item => {
             const eqData = dndRules.equipment[item];
             if (eqData && eqData.status) {
-                if (eqData.type === 'Escudo' || eqData.status.ac_bonus) { hasShield = true; } 
-                else if (eqData.type === 'Armadura') {
+                if (eqData.type === 'Shield' || eqData.status.ac_bonus) { hasShield = true; }
+                else if (eqData.type === 'Armor') {
                     let calcAC = eqData.status.base_ac || 10;
                     if (eqData.status.armor_type === 'light') calcAC += dexMod;
                     else if (eqData.status.armor_type === 'medium') calcAC += Math.min(dexMod, 2);
@@ -361,13 +361,13 @@ function updateAutoFeatures() {
 function openEditModal(isNew) {
     const title = document.getElementById('modal-title');
     if (isNew || !currentCharacterData) {
-        title.textContent = "Nova Ficha";
-        ['edit-name','edit-inventory','edit-location'].forEach(id => document.getElementById(id).value = id === 'edit-location' ? "Desconhecido" : "");
+        title.textContent = "New Sheet";
+        ['edit-name','edit-inventory','edit-location'].forEach(id => document.getElementById(id).value = id === 'edit-location' ? "Unknown" : "");
         ['edit-race','edit-class'].forEach(id => document.getElementById(id).selectedIndex = 0);
         ['edit-level','edit-max-hp','edit-current-hp','edit-ac','edit-str','edit-dex','edit-con','edit-int','edit-wis','edit-cha'].forEach(id => document.getElementById(id).value = (id === 'edit-level') ? "1" : "10");
         currentEditInventory = []; updateInventoryUI(); currentEditSpells = []; updateSpellsUI(); currentEditResources = {}; currentEditSpellSlots = {}; lastAppliedRace = null; updateAutoFeatures();
     } else {
-        title.textContent = "Editar Ficha";
+        title.textContent = "Edit Sheet";
         const d = currentCharacterData;
         document.getElementById('edit-name').value = d.name; document.getElementById('edit-race').value = d.race; document.getElementById('edit-class').value = d.character_class;
         document.getElementById('edit-level').value = d.level; document.getElementById('edit-xp').value = d.xp !== undefined ? d.xp : 0; document.getElementById('edit-location').value = d.location;
@@ -385,9 +385,9 @@ function closeEditModal() { document.getElementById('char-modal').classList.add(
 
 async function saveCharacter() {
     const payload = {
-        name: document.getElementById('edit-name').value || "Herói", race: document.getElementById('edit-race').value || "Humano",
-        character_class: document.getElementById('edit-class').value || "Aventureiro", level: parseInt(document.getElementById('edit-level').value) || 1, xp: parseInt(document.getElementById('edit-xp').value) || 0,
-        location: document.getElementById('edit-location').value || "Desconhecido", max_hp: parseInt(document.getElementById('edit-max-hp').value) || 10,
+        name: document.getElementById('edit-name').value || "Hero", race: document.getElementById('edit-race').value || "Human",
+        character_class: document.getElementById('edit-class').value || "Adventurer", level: parseInt(document.getElementById('edit-level').value) || 1, xp: parseInt(document.getElementById('edit-xp').value) || 0,
+        location: document.getElementById('edit-location').value || "Unknown", max_hp: parseInt(document.getElementById('edit-max-hp').value) || 10,
         current_hp: parseInt(document.getElementById('edit-current-hp').value) || 10, armor_class: parseInt(document.getElementById('edit-ac').value) || 10,
         inventory: currentEditInventory, spells: currentEditSpells, features: document.getElementById('edit-features').value.split(',').map(i => i.trim()).filter(i => i !== ''),
         resources: currentEditResources, spell_slots: currentEditSpellSlots,
@@ -398,18 +398,18 @@ async function saveCharacter() {
     try {
         const res = await fetch("http://localhost:8000/api/character", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
         if (!res.ok) throw new Error();
-        closeEditModal(); loadCharacter(); appendMessage('Sistema', 'A ficha foi atualizada!');
-    } catch (e) { console.error(e); alert("Erro ao salvar."); }
+        closeEditModal(); loadCharacter(); appendMessage('System', 'The sheet has been updated!');
+    } catch (e) { console.error(e); alert("Error saving."); }
 }
 
 async function uploadModule(event) {
     const file = event.target.files[0]; if (!file) return;
-    appendMessage('Sistema', 'A processar as páginas do módulo PDF...');
+    appendMessage('System', 'Processing the PDF module pages...');
     const formData = new FormData(); formData.append('file', file);
     try {
         const res = await fetch("http://localhost:8000/api/upload_module", { method: "POST", body: formData });
         if (!res.ok) throw new Error();
-        appendMessage('Sistema', `O módulo '${file.name}' foi memorizado com sucesso!`);
-    } catch (e) { console.error(e); appendMessage('Sistema', '<span class="text-red-400">Erro ao carregar o módulo.</span>'); }
+        appendMessage('System', `Module '${file.name}' was memorized successfully!`);
+    } catch (e) { console.error(e); appendMessage('System', '<span class="text-red-400">Error loading the module.</span>'); }
     event.target.value = '';
 }

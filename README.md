@@ -1,31 +1,33 @@
-# DungeonMAIster - Roadmap e To-Do List
+# DungeonMAIster - Roadmap and To-Do List
 
-Este documento acompanha o progresso de desenvolvimento do Motor TTRPG com IA (D&D 5e) focado na experiência Solo RPG. As tarefas estão divididas de acordo com as fases de implementação do projeto.
+This document tracks the development progress of the AI-powered TTRPG engine (D&D 5e) focused on the Solo RPG experience. Tasks are divided according to the project's implementation phases.
 
-## Fase 1: Fundação do Chat (Comunicação)
-- [x] Criar a estrutura básica de diretórios do projeto (`backend`, `frontend`, `data`, `docs`).
-- [x] Configurar o servidor FastAPI básico (`backend/main.py`).
-- [x] Criar a interface HTML/JS/Tailwind (`frontend/index.html`) com painéis para chat e ficha.
-- [x] Estabelecer a conexão via WebSocket entre cliente e servidor.
-- [x] Implementar a lógica de "Echo" (O servidor devolve o que o jogador digita para testar a comunicação).
-- [x] Criar a classe `AIGameMaster` base para receber e enviar mensagens textuais.
+## Phase 1: Chat Foundation (Communication)
+- [x] Create the basic project directory structure (`backend`, `frontend`, `data`, `docs`).
+- [x] Set up the basic FastAPI server (`backend/main.py`).
+- [x] Create the HTML/JS/Tailwind interface (`frontend/index.html`) with panels for chat and the character sheet.
+- [x] Establish the WebSocket connection between client and server.
+- [x] Implement the "Echo" logic (the server returns what the player types to test communication).
+- [x] Create the base `AIGameMaster` class to receive and send text messages.
 
-## Fase 2: O Motor RAG (Conhecimento do Mestre)
-- [x] Implementar script de ingestão e leitura de PDFs (manuais de regras e aventuras).
-- [x] Processar o texto dos PDFs em *chunks* e gerar embeddings.
-- [x] Configurar e salvar os embeddings num banco de dados vetorial local (ChromaDB/FAISS) usando metadados.
-- [x] Integrar a IA (Ollama/LangChain) para consultar o banco de dados RAG antes de formular respostas.
+## Phase 2: The RAG Engine (The Game Master's Knowledge)
+- [x] Implement a script to ingest and read PDFs (rulebooks and adventures).
+- [x] Process the PDF text into *chunks* and generate embeddings.
+- [x] Configure and save the embeddings in a local vector database (ChromaDB/FAISS) using metadata.
+- [x] Integrate the AI (Ollama/LangChain) to query the RAG database before formulating responses.
 
-## Fase 3: Ficha de Personagem e Sistema d20
-- [x] Desenhar e criar os modelos de dados (JSON e Pydantic) para a Ficha de Personagem D&D 5e.
-- [x] Criar a lógica matemática hardcoded no backend (ex: cálculo automático de modificadores de atributo).
-- [x] Implementar o sistema visual no frontend para exibir, atualizar e gerir a aba da Ficha e de Inventário.
-- [x] Desenvolver o "Motor de Dados" bidirecional para rolagem de jogador e validação.
-- [x] Configurar o tratamento da tag oculta `[REQUEST_ROLL]` enviada pelo Mestre IA para solicitar testes do jogador.
+## Phase 3: Character Sheet and d20 System
+- [x] Design and create the data models (JSON and Pydantic) for the D&D 5e Character Sheet.
+- [x] Create the hardcoded math logic in the backend (e.g. automatic ability-modifier calculation).
+- [x] Implement the visual system in the frontend to display, update and manage the Sheet and Inventory tabs.
+- [x] Develop the bidirectional "Dice Engine" for player rolls and validation.
+- [x] Set up handling of the hidden `[REQUEST_ROLL]` tag sent by the AI Game Master to request player checks.
 
-## Fase 4: Gestão de Memória e Expansões (O Cérebro do Mestre)
-- [x] Implementar o sistema de Memória em 3 camadas (Sessão [x], Resumo [x], Lore [x]).
-- [x] Criar a rotina de encerramento de sessão e comando `/compact` (gera o resumo e limpa o chat ativo).
-- [x] Desenvolver a injeção dinâmica de contexto para a montagem dos Prompts base da IA.
-- [x] Implementar o sistema de "Skills/Tool Calling" do Mestre (ex: `modificar_hp_jogador`, `consultar_regras`).
-- [x] Adicionar suporte a carregamento e troca de módulos de campanha em tempo real (Roteiro RAG guiado por localização).# mobileDungeonCard
+## Phase 4: Memory Management and Expansions (The Game Master's Brain)
+- [x] Implement the 3-layer Memory system (Session [x], Summary [x], Lore [x]).
+- [x] Create the session-closing routine and the `/compact` command (generates the summary and clears the active chat).
+- [x] Develop dynamic context injection for assembling the AI's base prompts.
+- [x] Implement the Game Master's "Skills/Tool Calling" system (e.g. `modify_player_hp`, `consult_rules`).
+- [x] Add support for loading and switching campaign modules in real time (location-guided RAG script).
+
+# mobileDungeonCard

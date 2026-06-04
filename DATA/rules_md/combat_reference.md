@@ -1,56 +1,56 @@
-# Referência Essencial de Regras — D&D 5e
+# Essential Rules Reference — D&D 5e
 
-Referência compacta e obrigatória para o Mestre resolver ações. Em caso de dúvida, segue estas regras.
+Compact, mandatory reference for the Game Master to resolve actions. When in doubt, follow these rules.
 
-## Testes de Atributo e Perícia
-- Rolagem base: 1d20 + modificador de atributo (+ proficiência, se aplicável).
-- Modificador de atributo = (valor do atributo − 10) ÷ 2, arredondado para baixo.
-- **Classes de Dificuldade (CD) típicas:** Muito Fácil 5 · Fácil 10 · Médio 15 · Difícil 20 · Muito Difícil 25 · Quase Impossível 30.
-- Sucesso quando o total iguala ou supera a CD.
+## Ability and Skill Checks
+- Base roll: 1d20 + ability modifier (+ proficiency, if applicable).
+- Ability modifier = (ability score − 10) ÷ 2, rounded down.
+- **Typical Difficulty Classes (DC):** Very Easy 5 · Easy 10 · Medium 15 · Hard 20 · Very Hard 25 · Nearly Impossible 30.
+- Success when the total meets or exceeds the DC.
 
-## Vantagem e Desvantagem
-- **Vantagem:** rola 2d20 e usa o MAIOR. **Desvantagem:** rola 2d20 e usa o MENOR.
-- Vantagem e desvantagem cancelam-se mutuamente (resulta em rolagem normal).
-- Nunca se acumulam (ter duas fontes de vantagem ainda é apenas vantagem).
+## Advantage and Disadvantage
+- **Advantage:** roll 2d20 and use the HIGHER. **Disadvantage:** roll 2d20 and use the LOWER.
+- Advantage and disadvantage cancel each other out (resulting in a normal roll).
+- They never stack (having two sources of advantage is still just advantage).
 
-## Ataques e Dano
-- **Jogada de ataque:** 1d20 + modificador (Força para corpo-a-corpo, Destreza para à distância ou armas de acuidade) + proficiência.
-- Acerta se o total ≥ Classe de Armadura (CA) do alvo.
-- **Acerto Crítico:** 20 natural no dado. Rola os dados de dano DUAS vezes.
-- **Erro Crítico:** 1 natural sempre erra.
+## Attacks and Damage
+- **Attack roll:** 1d20 + modifier (Strength for melee, Dexterity for ranged or finesse weapons) + proficiency.
+- Hits if the total ≥ the target's Armor Class (AC).
+- **Critical Hit:** natural 20 on the die. Roll the damage dice TWICE.
+- **Critical Miss:** natural 1 always misses.
 
-## Classe de Armadura (CA)
-- Sem armadura: CA = 10 + modificador de Destreza.
-- Armadura leve: base + Des completo. Média: base + Des (máx +2). Pesada: valor fixo.
-- Escudo: +2 na CA.
+## Armor Class (AC)
+- Unarmored: AC = 10 + Dexterity modifier.
+- Light armor: base + full Dex. Medium: base + Dex (max +2). Heavy: fixed value.
+- Shield: +2 to AC.
 
-## Economia de Ação (por turno em combate)
-- 1 Ação Principal + 1 Ação Bônus + 1 Reação + Movimento.
-- Ação Bônus só existe se uma habilidade/magia a conceder explicitamente.
-- Reação ocorre fora do próprio turno (ex.: ataque de oportunidade quando um inimigo deixa o alcance).
-- Validar SEMPRE a ficha antes de permitir uma ação: o jogador não pode gastar o que já usou neste turno.
+## Action Economy (per turn in combat)
+- 1 Action + 1 Bonus Action + 1 Reaction + Movement.
+- A Bonus Action exists only if an ability/spell explicitly grants one.
+- A Reaction occurs outside your own turn (e.g. an opportunity attack when an enemy leaves your reach).
+- ALWAYS validate the sheet before allowing an action: the player cannot spend what they have already used this turn.
 
-## Iniciativa
-- No início do combate, cada participante rola 1d20 + modificador de Destreza.
-- Atua-se por ordem decrescente de iniciativa.
+## Initiative
+- At the start of combat, each participant rolls 1d20 + Dexterity modifier.
+- Act in descending order of initiative.
 
-## Pontos de Vida, Morte e Cura
-- A 0 HP, a criatura cai inconsciente e começa a fazer rolagens de morte.
-- **Rolagem de morte:** 1d20. ≥10 sucesso, <10 falha. 3 sucessos = estável; 3 falhas = morte. 20 natural recupera 1 HP. 1 natural conta como 2 falhas.
-- Dano enquanto a 0 HP = 1 falha automática (ou crítico = morte instantânea se o dano for direto).
-- Cura acima de 0 HP interrompe as rolagens de morte.
+## Hit Points, Death and Healing
+- At 0 HP, the creature falls unconscious and begins making death saving throws.
+- **Death saving throw:** 1d20. ≥10 success, <10 failure. 3 successes = stable; 3 failures = death. A natural 20 restores 1 HP. A natural 1 counts as 2 failures.
+- Damage while at 0 HP = 1 automatic failure (or a critical = instant death if the damage is direct).
+- Healing above 0 HP stops the death saving throws.
 
-## Descansos
-- **Descanso Curto (1h):** pode gastar Dados de Vida para recuperar HP; recupera alguns recursos de classe.
-- **Descanso Longo (8h):** recupera todos os HP, todos os espaços de magia e recursos. Recupera metade dos Dados de Vida totais.
+## Rests
+- **Short Rest (1h):** you can spend Hit Dice to recover HP; recovers some class resources.
+- **Long Rest (8h):** recovers all HP, all spell slots and resources. Recovers half of your total Hit Dice.
 
-## Cobertura
-- Meia cobertura: +2 na CA e em testes de Destreza. Três-quartos: +5. Total: não pode ser alvo direto.
+## Cover
+- Half cover: +2 to AC and Dexterity saving throws. Three-quarters: +5. Total: cannot be targeted directly.
 
-## Condições Comuns
-- **Caído:** desvantagem em ataques; ataques corpo-a-corpo contra ele têm vantagem.
-- **Agarrado:** deslocamento 0.
-- **Atordoado/Paralisado:** incapacitado, ataques contra ele têm vantagem; acertos a 1,5m são críticos.
-- **Amedrontado:** desvantagem em testes e ataques enquanto vê a fonte do medo.
-- **Envenenado:** desvantagem em ataques e testes de atributo.
-- **Cego:** desvantagem nos próprios ataques; ataques contra ele têm vantagem.
+## Common Conditions
+- **Prone:** disadvantage on attacks; melee attacks against it have advantage.
+- **Grappled:** speed 0.
+- **Stunned/Paralyzed:** incapacitated, attacks against it have advantage; hits within 5 ft. are critical.
+- **Frightened:** disadvantage on checks and attacks while it can see the source of the fear.
+- **Poisoned:** disadvantage on attacks and ability checks.
+- **Blinded:** disadvantage on its own attacks; attacks against it have advantage.

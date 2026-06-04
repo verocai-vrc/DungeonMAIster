@@ -1,108 +1,108 @@
 {
     "races": {
-        "Humano": [
-            "+1 em todos os Atributos",
-            "Deslocamento 9m"
+        "Human": [
+            "+1 to all Ability Scores",
+            "Speed 30 ft."
         ],
-        "Elfo": [
-            "Visão no Escuro",
-            "Ancestralidade Feérica",
-            "Transe"
+        "Elf": [
+            "Darkvision",
+            "Fey Ancestry",
+            "Trance"
         ],
-        "Anão": [
-            "Visão no Escuro",
-            "Resiliência Anã",
-            "Treinamento Anão"
+        "Dwarf": [
+            "Darkvision",
+            "Dwarven Resilience",
+            "Dwarven Combat Training"
         ],
         "Halfling": [
-            "Sorte",
-            "Bravura",
-            "Agilidade Halfling"
+            "Lucky",
+            "Brave",
+            "Halfling Nimbleness"
         ]
     },
     "classes": {
-        "Bárbaro": {
+        "Barbarian": {
             "hit_dice": 12,
             "features": {
                 "1": [
-                    "Fúria",
-                    "Defesa sem Armadura"
+                    "Rage",
+                    "Unarmored Defense"
                 ],
                 "2": [
-                    "Ataque Temerário",
-                    "Sentido de Perigo"
+                    "Reckless Attack",
+                    "Danger Sense"
                 ],
                 "3": [
-                    "Caminho Primitivo"
+                    "Primal Path"
                 ]
             }
         },
-        "Guerreiro": {
+        "Fighter": {
             "hit_dice": 10,
             "features": {
                 "1": [
-                    "Estilo de Luta",
-                    "Retomar o Fôlego"
+                    "Fighting Style",
+                    "Second Wind"
                 ],
                 "2": [
-                    "Surto de Ação"
+                    "Action Surge"
                 ],
                 "3": [
-                    "Arquétipo Marcial"
+                    "Martial Archetype"
                 ]
             }
         },
-        "Ladino": {
+        "Rogue": {
             "hit_dice": 8,
             "features": {
                 "1": [
-                    "Ataque Furtivo",
-                    "Gíria de Ladrão",
-                    "Especialização"
+                    "Sneak Attack",
+                    "Thieves' Cant",
+                    "Expertise"
                 ],
                 "2": [
-                    "Ação Astuta"
+                    "Cunning Action"
                 ],
                 "3": [
-                    "Arquétipo Rogino"
+                    "Roguish Archetype"
                 ]
             }
         },
-        "Mago": {
+        "Wizard": {
             "hit_dice": 6,
             "features": {
                 "1": [
-                    "Conjuração",
-                    "Recuperação Arcana"
+                    "Spellcasting",
+                    "Arcane Recovery"
                 ],
                 "2": [
-                    "Tradição Arcana"
+                    "Arcane Tradition"
                 ],
                 "3": [
-                    "Truques Adicionais"
+                    "Additional Cantrips"
                 ]
             }
         },
-        "Clérigo": {
+        "Cleric": {
             "hit_dice": 8,
             "features": {
                 "1": [
-                    "Conjuração",
-                    "Domínio Divino"
+                    "Spellcasting",
+                    "Divine Domain"
                 ],
                 "2": [
-                    "Canalizar Divindade (1/descanso)"
+                    "Channel Divinity (1/rest)"
                 ],
                 "3": [
-                    "Magias de Domínio"
+                    "Domain Spells"
                 ]
             }
         }
     },
     "descriptions": {
-        "Fúria": "Em batalha, você luta com ferocidade primitiva. No seu turno, você pode entrar em fúria como uma ação bônus, ganhando vantagem em Força e resistência a dano físico.",
-        "Defesa sem Armadura": "Enquanto não usar armadura, CA = 10 + Mod DES + Mod CON.",
-        "Ataque Furtivo": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Você sabe como atacar sutilmente. Causa dano extra se tiver vantagem."
+        "Rage": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action, gaining advantage on Strength and resistance to physical damage.",
+        "Unarmored Defense": "While not wearing armor, AC = 10 + DEX Mod + CON Mod.",
+        "Sneak Attack": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive</span>You know how to strike subtly. You deal extra damage when you have advantage."
     },
     "features": []
 }

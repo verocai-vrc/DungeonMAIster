@@ -4,36 +4,36 @@ import time
 import webbrowser
 import subprocess
 
-# Força saída UTF-8 no Windows para evitar erros com caracteres especiais
+# Force UTF-8 output on Windows to avoid errors with special characters
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
 def start():
-    # Determina os diretórios com base na localização deste script
+    # Determine the directories based on this script's location
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    
+
     print("========================================")
-    print(">>>  Iniciando o DungeonMAIster...")
+    print(">>>  Starting DungeonMAIster...")
     print("========================================")
-    print("Subindo o servidor backend (FastAPI)...")
-    
-    # Inicia o Uvicorn usando o executável atual do Python (mantém compatibilidade com venv)
+    print("Bringing up the backend server (FastAPI)...")
+
+    # Start Uvicorn using the current Python executable (keeps venv compatibility)
     server_process = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "backend.main:app", "--reload"],
         cwd=base_dir
     )
-    
-    # Aguarda 2 segundos para dar tempo do servidor iniciar corretamente
+
+    # Wait 2 seconds to give the server time to start properly
     time.sleep(2)
-    
-    print("Abrindo a interface no navegador...")
+
+    print("Opening the interface in the browser...")
     webbrowser.open("http://localhost:8000")
-    
+
     try:
-        print("\nO servidor está a rodar! Pressione Ctrl+C neste terminal para encerrar o jogo.")
+        print("\nThe server is running! Press Ctrl+C in this terminal to shut down the game.")
         server_process.wait()
     except KeyboardInterrupt:
-        print("\nEncerrando o motor do DungeonMAIster...")
+        print("\nShutting down the DungeonMAIster engine...")
         server_process.terminate()
 
 if __name__ == "__main__":

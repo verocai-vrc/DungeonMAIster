@@ -1,69 +1,69 @@
 {
     "items": {
-        "Adaga": {
-            "type": "Arma",
-            "name": "Adaga",
-            "description": "Arma corpo-a-corpo simples. 1d4 de dano perfurante.",
+        "Dagger": {
+            "type": "Weapon",
+            "name": "Dagger",
+            "description": "Simple melee weapon. 1d4 piercing damage.",
             "status": {
                 "damage": "1d4",
-                "damage_type": "perfurante",
+                "damage_type": "piercing",
                 "properties": [
-                    "acuidade",
-                    "leve",
-                    "arremesso"
+                    "finesse",
+                    "light",
+                    "thrown"
                 ]
             }
         },
-        "Arco Longo": {
-            "type": "Arma",
-            "name": "Arco Longo",
-            "description": "Arma à distância. 1d8 de dano perfurante.",
+        "Longbow": {
+            "type": "Weapon",
+            "name": "Longbow",
+            "description": "Ranged weapon. 1d8 piercing damage.",
             "status": {
                 "damage": "1d8",
-                "damage_type": "perfurante",
+                "damage_type": "piercing",
                 "properties": [
-                    "munição",
-                    "pesado",
-                    "duas mãos"
+                    "ammunition",
+                    "heavy",
+                    "two-handed"
                 ]
             }
         },
-        "Machado Grande": {
-            "type": "Arma",
-            "name": "Machado Grande",
-            "description": "Machado de um guerreiro furioso. 1d12 de dano cortante.",
+        "Greataxe": {
+            "type": "Weapon",
+            "name": "Greataxe",
+            "description": "The axe of a furious warrior. 1d12 slashing damage.",
             "status": {
                 "damage": "1d12",
-                "damage_type": "cortante",
+                "damage_type": "slashing",
                 "properties": [
-                    "pesado",
-                    "duas mãos"
+                    "heavy",
+                    "two-handed"
                 ]
             }
         },
-        "Armadura de Couro": {
-            "type": "Armadura",
-            "name": "Armadura de Couro",
-            "description": "Armadura leve. CA 11 + Modificador de Destreza.",
+        "Leather Armor": {
+            "type": "Armor",
+            "name": "Leather Armor",
+            "description": "Light armor. AC 11 + Dexterity modifier.",
             "status": {
                 "armor_type": "light",
                 "base_ac": 11
             }
         },
-        "Brunea": {
-            "type": "Armadura",
-            "name": "Brunea",
-            "description": "Armadura média (escamas). CA 14 + Modificador de Destreza (máx 2). Desvantagem em Furtividade.",
+        "Scale Mail": {
+            "type": "Armor",
+            "name": "Scale Mail",
+            "description": "Medium armor (scales). AC 14 + Dexterity modifier (max 2). Disadvantage on Stealth.",
             "status": {
                 "armor_type": "medium",
                 "base_ac": 14,
                 "stealth_disadvantage": true
             }
         },
-        "Cota de Malha": {
-            "type": "Armadura",
-            "name": "Cota de Malha",
-            "description": "Armadura pesada. CA 16. Requer For 13. Desvantagem em Furtividade.",
+        "Chain Mail": {
+            "type": "Armor",
+            "name": "Chain Mail",
+            "description": "Heavy armor. AC 16. Requires Str 13. Disadvantage on Stealth.",
             "status": {
                 "armor_type": "heavy",
                 "base_ac": 16,
@@ -71,10 +71,10 @@
                 "stealth_disadvantage": true
             }
         },
-        "Placas": {
-            "type": "Armadura",
-            "name": "Placas",
-            "description": "Armadura pesada. CA 18. Requer For 15. Desvantagem em Furtividade.",
+        "Plate Armor": {
+            "type": "Armor",
+            "name": "Plate Armor",
+            "description": "Heavy armor. AC 18. Requires Str 15. Disadvantage on Stealth.",
             "status": {
                 "armor_type": "heavy",
                 "base_ac": 18,
@@ -82,59 +82,59 @@
                 "stealth_disadvantage": true
             }
         },
-        "Escudo": {
-            "type": "Escudo",
-            "name": "Escudo",
-            "description": "Concede +2 na sua Classe de Armadura.",
+        "Shield": {
+            "type": "Shield",
+            "name": "Shield",
+            "description": "Grants +2 to your Armor Class.",
             "status": {
                 "ac_bonus": 2
             }
         },
-        "Poção de Cura": {
-            "type": "Consumível",
-            "name": "Poção de Cura",
-            "description": "Um personagem que beber o líquido deste frasco recupera 2d4+2 pontos de vida.",
+        "Potion of Healing": {
+            "type": "Consumable",
+            "name": "Potion of Healing",
+            "description": "A character who drinks the liquid in this vial regains 2d4+2 hit points.",
             "status": {
                 "healing": "2d4+2"
             }
         },
-        "Mochila do Aventureiro": {
+        "Explorer's Pack": {
             "type": "Misc",
-            "name": "Mochila do Aventureiro",
-            "description": "Equipamento contendo cordas, tochas, rações, e outras necessidades de viagem.",
+            "name": "Explorer's Pack",
+            "description": "Gear containing rope, torches, rations, and other travel necessities.",
             "status": {}
         }
     },
     "armor": {
-        "Armadura de Couro": {
+        "Leather Armor": {
             "type": "light",
             "base": 11
         },
-        "Brunea": {
+        "Scale Mail": {
             "type": "medium",
             "base": 14
         },
-        "Cota de Malha": {
+        "Chain Mail": {
             "type": "heavy",
             "base": 16
         },
-        "Placas": {
+        "Plate Armor": {
             "type": "heavy",
             "base": 18
         },
-        "Escudo": {
+        "Shield": {
             "type": "shield",
             "bonus": 2
         }
     },
     "descriptions": {
-        "Machado Grande": "Machado de um lenhador qualquer... ou de um guerreiro furioso. 1d12 de dano cortante. Pesado, duas mãos.",
-        "Adaga": "Arma corpo-a-corpo simples. 1d4 de dano perfurante. Acuidade, leve, arremesso (distância 6/18m).",
-        "Poção de Cura": "Um personagem que beber o líquido vermelho deste frasco recupera 2d4+2 pontos de vida.",
-        "Armadura de Couro": "Armadura leve. CA 11 + Modificador de Destreza.",
-        "Brunea": "Armadura média (escamas). CA 14 + Modificador de Destreza (máx 2). Desvantagem em Furtividade.",
-        "Cota de Malha": "Armadura pesada. CA 16. Requer For 13. Desvantagem em Furtividade.",
-        "Placas": "Armadura pesada. CA 18. Requer For 15. Desvantagem em Furtividade.",
-        "Escudo": "Concede +2 na sua Classe de Armadura."
+        "Greataxe": "The axe of some lumberjack... or of a furious warrior. 1d12 slashing damage. Heavy, two-handed.",
+        "Dagger": "Simple melee weapon. 1d4 piercing damage. Finesse, light, thrown (range 20/60 ft.).",
+        "Potion of Healing": "A character who drinks the red liquid in this vial regains 2d4+2 hit points.",
+        "Leather Armor": "Light armor. AC 11 + Dexterity modifier.",
+        "Scale Mail": "Medium armor (scales). AC 14 + Dexterity modifier (max 2). Disadvantage on Stealth.",
+        "Chain Mail": "Heavy armor. AC 16. Requires Str 13. Disadvantage on Stealth.",
+        "Plate Armor": "Heavy armor. AC 18. Requires Str 15. Disadvantage on Stealth.",
+        "Shield": "Grants +2 to your Armor Class."
     }
 }

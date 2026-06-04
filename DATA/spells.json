@@ -1,20 +1,20 @@
 {
     "spells_by_level": {
         "1": [
-            "Mísseis Mágicos",
-            "Curar Ferimentos",
-            "Escudo Arcano"
+            "Magic Missile",
+            "Cure Wounds",
+            "Shield"
         ],
         "2": [
-            "Passo Nebuloso",
-            "Arma Espiritual"
+            "Misty Step",
+            "Spiritual Weapon"
         ]
     },
     "descriptions": {
-        "Mísseis Mágicos": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Principal | Custo: 1 Spell Slot</span>Crias três dardos mágicos brilhantes. Cada dardo atinge uma criatura e causa 1d4+1 de dano de energia.",
-        "Curar Ferimentos": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Principal | Custo: 1 Spell Slot</span>Uma criatura que você toca recupera pontos de vida iguais a 1d8 + seu modificador.",
-        "Escudo Arcano": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Reação | Custo: 1 Spell Slot</span>Uma barreira invisível aparece e protege você. Ganha +5 de bônus na CA até seu próximo turno.",
-        "Passo Nebuloso": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Spell Slot</span>Você é cercado por névoa e teletransporta-se até 9 metros.",
-        "Arma Espiritual": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Spell Slot</span>Você cria uma arma flutuante espectral que atinge uma criatura."
+        "Magic Missile": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Action | Cost: 1 Spell Slot</span>You create three glowing magical darts. Each dart hits a creature and deals 1d4+1 force damage.",
+        "Cure Wounds": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Action | Cost: 1 Spell Slot</span>A creature you touch regains hit points equal to 1d8 + your modifier.",
+        "Shield": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Reaction | Cost: 1 Spell Slot</span>An invisible barrier appears and protects you. You gain a +5 bonus to AC until your next turn.",
+        "Misty Step": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Bonus Action | Cost: 1 Spell Slot</span>You are surrounded by mist and teleport up to 30 feet.",
+        "Spiritual Weapon": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Bonus Action | Cost: 1 Spell Slot</span>You create a floating spectral weapon that strikes a creature."
     }
 }

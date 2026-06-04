@@ -1,125 +1,125 @@
 {
     "classes": {
-        "Bárbaro": {
+        "Barbarian": {
             "hit_dice": 12,
             "proficiencies": [
-                "Atletismo",
-                "Intimidação"
+                "Athletics",
+                "Intimidation"
             ],
             "features": {
                 "1": [
-                    "Fúria",
-                    "Defesa sem Armadura"
+                    "Rage",
+                    "Unarmored Defense"
                 ],
                 "2": [
-                    "Ataque Temerário",
-                    "Sentido de Perigo"
+                    "Reckless Attack",
+                    "Danger Sense"
                 ],
                 "3": [
-                    "Caminho Primitivo"
+                    "Primal Path"
                 ]
             }
         },
-        "Guerreiro": {
+        "Fighter": {
             "hit_dice": 10,
             "proficiencies": [
-                "Acrobacia",
-                "Sobrevivência"
+                "Acrobatics",
+                "Survival"
             ],
             "features": {
                 "1": [
-                    "Estilo de Luta",
-                    "Retomar o Fôlego"
+                    "Fighting Style",
+                    "Second Wind"
                 ],
                 "2": [
-                    "Surto de Ação"
+                    "Action Surge"
                 ],
                 "3": [
-                    "Arquétipo Marcial"
+                    "Martial Archetype"
                 ]
             }
         },
-        "Ladino": {
+        "Rogue": {
             "hit_dice": 8,
             "proficiencies": [
-                "Furtividade",
-                "Prestidigitação",
-                "Enganação"
+                "Stealth",
+                "Sleight of Hand",
+                "Deception"
             ],
             "features": {
                 "1": [
-                    "Ataque Furtivo",
-                    "Gíria de Ladrão",
-                    "Especialização"
+                    "Sneak Attack",
+                    "Thieves' Cant",
+                    "Expertise"
                 ],
                 "2": [
-                    "Ação Astuta"
+                    "Cunning Action"
                 ],
                 "3": [
-                    "Arquétipo Rogino"
+                    "Roguish Archetype"
                 ]
             }
         },
-        "Mago": {
+        "Wizard": {
             "hit_dice": 6,
             "proficiencies": [
-                "Arcanismo",
-                "História"
+                "Arcana",
+                "History"
             ],
             "features": {
                 "1": [
-                    "Conjuração",
-                    "Recuperação Arcana"
+                    "Spellcasting",
+                    "Arcane Recovery"
                 ],
                 "2": [
-                    "Tradição Arcana"
+                    "Arcane Tradition"
                 ],
                 "3": [
-                    "Truques Adicionais"
+                    "Additional Cantrips"
                 ]
             }
         },
-        "Clérigo": {
+        "Cleric": {
             "hit_dice": 8,
             "proficiencies": [
-                "Religião",
-                "Medicina"
+                "Religion",
+                "Medicine"
             ],
             "features": {
                 "1": [
-                    "Conjuração",
-                    "Domínio Divino"
+                    "Spellcasting",
+                    "Divine Domain"
                 ],
                 "2": [
-                    "Canalizar Divindade (1/descanso)"
+                    "Channel Divinity (1/rest)"
                 ],
                 "3": [
-                    "Magias de Domínio"
+                    "Domain Spells"
                 ]
             }
         },
-        "Feiticeiro": {
+        "Sorcerer": {
             "hit_dice": 6,
             "proficiencies": [
-                "Arcanismo",
-                "Enganação"
+                "Arcana",
+                "Deception"
             ],
             "features": {
                 "1": [
-                    "Conjuração",
-                    "Origem Feiticeira"
+                    "Spellcasting",
+                    "Sorcerous Origin"
                 ],
                 "2": [
-                    "Fonte de Magia"
+                    "Font of Magic"
                 ],
                 "3": [
-                    "Metamágica"
+                    "Metamagic"
                 ]
             }
         }
     },
     "descriptions": {
-        "Fúria": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Fúria</span>Em batalha, você luta com ferocidade primitiva.",
-        "Defesa sem Armadura": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Enquanto não usar armadura, CA = 10 + Mod DES + Mod CON."
+        "Rage": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Bonus Action | Cost: 1 Rage</span>In battle, you fight with primal ferocity.",
+        "Unarmored Defense": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive</span>While not wearing armor, AC = 10 + DEX Mod + CON Mod."
     }
 }

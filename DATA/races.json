@@ -1,6 +1,6 @@
 {
     "races": {
-        "Humano": {
+        "Human": {
             "attributes": {
                 "strength": 1,
                 "dexterity": 1,
@@ -10,27 +10,27 @@
                 "charisma": 1
             },
             "features": [
-                "Deslocamento 9m"
+                "Speed 30 ft."
             ]
         },
-        "Elfo": {
+        "Elf": {
             "attributes": {
                 "dexterity": 2
             },
             "features": [
-                "Visão no Escuro",
-                "Ancestralidade Feérica",
-                "Transe"
+                "Darkvision",
+                "Fey Ancestry",
+                "Trance"
             ]
         },
-        "Anão": {
+        "Dwarf": {
             "attributes": {
                 "constitution": 2
             },
             "features": [
-                "Visão no Escuro",
-                "Resiliência Anã",
-                "Treinamento Anão"
+                "Darkvision",
+                "Dwarven Resilience",
+                "Dwarven Combat Training"
             ]
         },
         "Halfling": {
@@ -38,25 +38,25 @@
                 "dexterity": 2
             },
             "features": [
-                "Sorte",
-                "Bravura",
-                "Agilidade Halfling"
+                "Lucky",
+                "Brave",
+                "Halfling Nimbleness"
             ]
         },
-        "Orc": {
+        "Half-Orc": {
             "attributes": {
                 "strength": 2,
                 "constitution": 1
             },
             "features": [
-                "Visão no Escuro",
-                "Ataque Selvagem",
-                "Resistência Implacável"
+                "Darkvision",
+                "Savage Attacks",
+                "Relentless Endurance"
             ]
         }
     },
     "descriptions": {
-        "Ataque Selvagem": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Acertos críticos causam dano extra massivo.",
-        "Resistência Implacável": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva | 1/Descanso Longo</span>Quando cai para 0 HP, pode escolher cair para 1 HP em vez disso (1/descanso longo)."
+        "Savage Attacks": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive</span>Critical hits deal massive extra damage.",
+        "Relentless Endurance": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive | 1/Long Rest</span>When you drop to 0 HP, you can choose to drop to 1 HP instead (1/long rest)."
     }
 }

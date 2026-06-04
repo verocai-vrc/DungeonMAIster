@@ -1,7 +1,7 @@
 import os
 import json
 
-# Caminhos para os ficheiros e diretórios
+# Paths to files and directories
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_DIR = os.path.join(BASE_DIR, "data", "db")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "saves")
@@ -14,99 +14,99 @@ RACES_FILE = os.path.join(BASE_DIR, "data", "races.json")
 CLASSES_FILE = os.path.join(BASE_DIR, "data", "classes.json")
 
 def init_data_files():
-    """Cria os ficheiros de regras divididos por categoria se não existirem."""
+    """Creates the category-split rules files if they do not exist."""
     os.makedirs(SAVE_DIR, exist_ok=True)
     os.makedirs(PDF_DIR, exist_ok=True)
-    
+
     equipment_data = {
         "items": {
-            "Adaga": {
-                "type": "Arma", "name": "Adaga", 
-                "description": "Arma corpo-a-corpo simples. 1d4 de dano perfurante.", 
-                "status": {"damage": "1d4", "damage_type": "perfurante", "properties": ["acuidade", "leve", "arremesso"]}
+            "Dagger": {
+                "type": "Weapon", "name": "Dagger",
+                "description": "Simple melee weapon. 1d4 piercing damage.",
+                "status": {"damage": "1d4", "damage_type": "piercing", "properties": ["finesse", "light", "thrown"]}
             },
-            "Arco Longo": {
-                "type": "Arma", "name": "Arco Longo", 
-                "description": "Arma à distância. 1d8 de dano perfurante.", 
-                "status": {"damage": "1d8", "damage_type": "perfurante", "properties": ["munição", "pesado", "duas mãos"]}
+            "Longbow": {
+                "type": "Weapon", "name": "Longbow",
+                "description": "Ranged weapon. 1d8 piercing damage.",
+                "status": {"damage": "1d8", "damage_type": "piercing", "properties": ["ammunition", "heavy", "two-handed"]}
             },
-            "Machado Grande": {
-                "type": "Arma", "name": "Machado Grande", 
-                "description": "Machado de um guerreiro furioso. 1d12 de dano cortante.", 
-                "status": {"damage": "1d12", "damage_type": "cortante", "properties": ["pesado", "duas mãos"]}
+            "Greataxe": {
+                "type": "Weapon", "name": "Greataxe",
+                "description": "The axe of a furious warrior. 1d12 slashing damage.",
+                "status": {"damage": "1d12", "damage_type": "slashing", "properties": ["heavy", "two-handed"]}
             },
-            "Armadura de Couro": {
-                "type": "Armadura", "name": "Armadura de Couro", 
-                "description": "Armadura leve. CA 11 + Modificador de Destreza.", 
+            "Leather Armor": {
+                "type": "Armor", "name": "Leather Armor",
+                "description": "Light armor. AC 11 + Dexterity modifier.",
                 "status": {"armor_type": "light", "base_ac": 11}
             },
-            "Brunea": {
-                "type": "Armadura", "name": "Brunea", 
-                "description": "Armadura média (escamas). CA 14 + Modificador de Destreza (máx 2). Desvantagem em Furtividade.", 
+            "Scale Mail": {
+                "type": "Armor", "name": "Scale Mail",
+                "description": "Medium armor (scales). AC 14 + Dexterity modifier (max 2). Disadvantage on Stealth.",
                 "status": {"armor_type": "medium", "base_ac": 14, "stealth_disadvantage": True}
             },
-            "Cota de Malha": {
-                "type": "Armadura", "name": "Cota de Malha", 
-                "description": "Armadura pesada. CA 16. Requer For 13. Desvantagem em Furtividade.", 
+            "Chain Mail": {
+                "type": "Armor", "name": "Chain Mail",
+                "description": "Heavy armor. AC 16. Requires Str 13. Disadvantage on Stealth.",
                 "status": {"armor_type": "heavy", "base_ac": 16, "strength_req": 13, "stealth_disadvantage": True}
             },
-            "Placas": {
-                "type": "Armadura", "name": "Placas", 
-                "description": "Armadura pesada. CA 18. Requer For 15. Desvantagem em Furtividade.", 
+            "Plate Armor": {
+                "type": "Armor", "name": "Plate Armor",
+                "description": "Heavy armor. AC 18. Requires Str 15. Disadvantage on Stealth.",
                 "status": {"armor_type": "heavy", "base_ac": 18, "strength_req": 15, "stealth_disadvantage": True}
             },
-            "Escudo": {
-                "type": "Escudo", "name": "Escudo", 
-                "description": "Concede +2 na sua Classe de Armadura.", 
+            "Shield": {
+                "type": "Shield", "name": "Shield",
+                "description": "Grants +2 to your Armor Class.",
                 "status": {"ac_bonus": 2}
             },
-            "Poção de Cura": {
-                "type": "Consumível", "name": "Poção de Cura", 
-                "description": "Um personagem que beber o líquido deste frasco recupera 2d4+2 pontos de vida.", 
+            "Potion of Healing": {
+                "type": "Consumable", "name": "Potion of Healing",
+                "description": "A character who drinks the liquid in this vial regains 2d4+2 hit points.",
                 "status": {"healing": "2d4+2"}
             },
-            "Mochila do Aventureiro": {
-                "type": "Misc", "name": "Mochila do Aventureiro", 
-                "description": "Equipamento contendo cordas, tochas, rações, e outras necessidades de viagem.", 
+            "Explorer's Pack": {
+                "type": "Misc", "name": "Explorer's Pack",
+                "description": "Gear containing rope, torches, rations, and other travel necessities.",
                 "status": {}
             }
         }
     }
 
     spells_data = {
-        "spells_by_level": { "1": ["Mísseis Mágicos", "Curar Ferimentos", "Escudo Arcano"], "2": ["Passo Nebuloso", "Arma Espiritual"] },
+        "spells_by_level": { "1": ["Magic Missile", "Cure Wounds", "Shield"], "2": ["Misty Step", "Spiritual Weapon"] },
         "descriptions": {
-            "Mísseis Mágicos": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Principal | Custo: 1 Spell Slot</span>Crias três dardos mágicos brilhantes. Cada dardo atinge uma criatura e causa 1d4+1 de dano de energia.",
-            "Curar Ferimentos": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Principal | Custo: 1 Spell Slot</span>Uma criatura que você toca recupera pontos de vida iguais a 1d8 + seu modificador.",
-            "Escudo Arcano": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Reação | Custo: 1 Spell Slot</span>Uma barreira invisível aparece e protege você. Ganha +5 de bônus na CA até seu próximo turno.",
-            "Passo Nebuloso": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Spell Slot</span>Você é cercado por névoa e teletransporta-se até 9 metros.",
-            "Arma Espiritual": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Spell Slot</span>Você cria uma arma flutuante espectral que atinge uma criatura."
+            "Magic Missile": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Action | Cost: 1 Spell Slot</span>You create three glowing magical darts. Each dart hits a creature and deals 1d4+1 force damage.",
+            "Cure Wounds": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Action | Cost: 1 Spell Slot</span>A creature you touch regains hit points equal to 1d8 + your modifier.",
+            "Shield": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Reaction | Cost: 1 Spell Slot</span>An invisible barrier appears and protects you. You gain a +5 bonus to AC until your next turn.",
+            "Misty Step": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Bonus Action | Cost: 1 Spell Slot</span>You are surrounded by mist and teleport up to 30 feet.",
+            "Spiritual Weapon": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Bonus Action | Cost: 1 Spell Slot</span>You create a floating spectral weapon that strikes a creature."
         }
     }
 
-    abilities_data = { "features": [], "descriptions": { "Ataque Furtivo": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Você sabe como atacar sutilmente. Causa dano extra se tiver vantagem." } }
+    abilities_data = { "features": [], "descriptions": { "Sneak Attack": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive</span>You know how to strike subtly. You deal extra damage when you have advantage." } }
 
     races_data = {
         "races": {
-            "Humano": { "attributes": {"strength": 1, "dexterity": 1, "constitution": 1, "intelligence": 1, "wisdom": 1, "charisma": 1}, "features": ["Deslocamento 9m"] },
-            "Elfo": { "attributes": {"dexterity": 2}, "features": ["Visão no Escuro", "Ancestralidade Feérica", "Transe"] },
-            "Anão": { "attributes": {"constitution": 2}, "features": ["Visão no Escuro", "Resiliência Anã", "Treinamento Anão"] },
-            "Halfling": { "attributes": {"dexterity": 2}, "features": ["Sorte", "Bravura", "Agilidade Halfling"] },
-            "Orc": { "attributes": {"strength": 2, "constitution": 1}, "features": ["Visão no Escuro", "Ataque Selvagem", "Resistência Implacável"] }
+            "Human": { "attributes": {"strength": 1, "dexterity": 1, "constitution": 1, "intelligence": 1, "wisdom": 1, "charisma": 1}, "features": ["Speed 30 ft."] },
+            "Elf": { "attributes": {"dexterity": 2}, "features": ["Darkvision", "Fey Ancestry", "Trance"] },
+            "Dwarf": { "attributes": {"constitution": 2}, "features": ["Darkvision", "Dwarven Resilience", "Dwarven Combat Training"] },
+            "Halfling": { "attributes": {"dexterity": 2}, "features": ["Lucky", "Brave", "Halfling Nimbleness"] },
+            "Half-Orc": { "attributes": {"strength": 2, "constitution": 1}, "features": ["Darkvision", "Savage Attacks", "Relentless Endurance"] }
         },
-        "descriptions": { "Ataque Selvagem": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Acertos críticos causam dano extra massivo.", "Resistência Implacável": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva | 1/Descanso Longo</span>Quando cai para 0 HP, pode escolher cair para 1 HP em vez disso (1/descanso longo)." }
+        "descriptions": { "Savage Attacks": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive</span>Critical hits deal massive extra damage.", "Relentless Endurance": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive | 1/Long Rest</span>When you drop to 0 HP, you can choose to drop to 1 HP instead (1/long rest)." }
     }
 
     classes_data = {
         "classes": {
-            "Bárbaro": { "hit_dice": 12, "proficiencies": ["Atletismo", "Intimidação"], "features": { "1": ["Fúria", "Defesa sem Armadura"], "2": ["Ataque Temerário"], "3": ["Caminho Primitivo"] } },
-            "Guerreiro": { "hit_dice": 10, "proficiencies": ["Acrobacia", "Sobrevivência"], "features": { "1": ["Estilo de Luta", "Retomar o Fôlego"], "2": ["Surto de Ação"], "3": ["Arquétipo Marcial"] } },
-            "Ladino": { "hit_dice": 8, "proficiencies": ["Furtividade", "Prestidigitação", "Enganação"], "features": { "1": ["Ataque Furtivo", "Gíria de Ladrão", "Especialização"], "2": ["Ação Astuta"], "3": ["Arquétipo Rogino"] } },
-            "Mago": { "hit_dice": 6, "proficiencies": ["Arcanismo", "História"], "features": { "1": ["Conjuração", "Recuperação Arcana"], "2": ["Tradição Arcana"], "3": ["Truques Adicionais"] } },
-            "Clérigo": { "hit_dice": 8, "proficiencies": ["Religião", "Medicina"], "features": { "1": ["Conjuração", "Domínio Divino"], "2": ["Canalizar Divindade (1/descanso)"], "3": ["Magias de Domínio"] } },
-            "Feiticeiro": { "hit_dice": 6, "proficiencies": ["Arcanismo", "Enganação"], "features": { "1": ["Conjuração", "Origem Feiticeira"], "2": ["Fonte de Magia"], "3": ["Metamágica"] } }
+            "Barbarian": { "hit_dice": 12, "proficiencies": ["Athletics", "Intimidation"], "features": { "1": ["Rage", "Unarmored Defense"], "2": ["Reckless Attack"], "3": ["Primal Path"] } },
+            "Fighter": { "hit_dice": 10, "proficiencies": ["Acrobatics", "Survival"], "features": { "1": ["Fighting Style", "Second Wind"], "2": ["Action Surge"], "3": ["Martial Archetype"] } },
+            "Rogue": { "hit_dice": 8, "proficiencies": ["Stealth", "Sleight of Hand", "Deception"], "features": { "1": ["Sneak Attack", "Thieves' Cant", "Expertise"], "2": ["Cunning Action"], "3": ["Roguish Archetype"] } },
+            "Wizard": { "hit_dice": 6, "proficiencies": ["Arcana", "History"], "features": { "1": ["Spellcasting", "Arcane Recovery"], "2": ["Arcane Tradition"], "3": ["Additional Cantrips"] } },
+            "Cleric": { "hit_dice": 8, "proficiencies": ["Religion", "Medicine"], "features": { "1": ["Spellcasting", "Divine Domain"], "2": ["Channel Divinity (1/rest)"], "3": ["Domain Spells"] } },
+            "Sorcerer": { "hit_dice": 6, "proficiencies": ["Arcana", "Deception"], "features": { "1": ["Spellcasting", "Sorcerous Origin"], "2": ["Font of Magic"], "3": ["Metamagic"] } }
         },
-        "descriptions": { "Fúria": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Ação Bônus | Custo: 1 Fúria</span>Em batalha, você luta com ferocidade primitiva.", "Defesa sem Armadura": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passiva</span>Enquanto não usar armadura, CA = 10 + Mod DES + Mod CON." }
+        "descriptions": { "Rage": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Bonus Action | Cost: 1 Rage</span>In battle, you fight with primal ferocity.", "Unarmored Defense": "<span class='text-purple-400 font-bold text-[10px] uppercase block mb-1'>⚡ Passive</span>While not wearing armor, AC = 10 + DEX Mod + CON Mod." }
     }
 
     def write_json_merge(file_path, default_data):
@@ -135,11 +135,11 @@ def load_character():
     if os.path.exists(CHAR_FILE):
         try:
             with open(CHAR_FILE, "r", encoding="utf-8") as f: return json.load(f)
-        except Exception as e: print(f"Erro ao carregar ficha salva: {e}")
-    return { "name": "Tharok", "race": "Humano", "character_class": "Bárbaro", "level": 1, "xp": 0, "location": "Taverna do Pônei Saltitante", "attributes": { "strength": 16, "dexterity": 14, "constitution": 15, "intelligence": 8, "wisdom": 10, "charisma": 12 }, "max_hp": 14, "current_hp": 14, "armor_class": 14, "inventory": ["Machado Grande", "Poção de Cura"], "features": ["Deslocamento 9m", "Fúria", "Defesa sem Armadura"], "spells": [], "resources": {"Fúria": {"current": 2, "max": 2}}, "spell_slots": {}, "action_economy": {"main": True, "bonus": True, "reaction": True}, "in_combat": False, "initiative_order": [] }
+        except Exception as e: print(f"Error loading saved sheet: {e}")
+    return { "name": "Tharok", "race": "Human", "character_class": "Barbarian", "level": 1, "xp": 0, "location": "The Prancing Pony Tavern", "attributes": { "strength": 16, "dexterity": 14, "constitution": 15, "intelligence": 8, "wisdom": 10, "charisma": 12 }, "max_hp": 14, "current_hp": 14, "armor_class": 14, "inventory": ["Greataxe", "Potion of Healing"], "features": ["Speed 30 ft.", "Rage", "Unarmored Defense"], "spells": [], "resources": {"Rage": {"current": 2, "max": 2}}, "spell_slots": {}, "action_economy": {"main": True, "bonus": True, "reaction": True}, "in_combat": False, "initiative_order": [] }
 
 def save_character(state):
     try:
         with open(CHAR_FILE, "w", encoding="utf-8") as f: json.dump(state, f, ensure_ascii=False, indent=4)
     except Exception as e:
-        print(f"Erro ao salvar ficha: {e}")
+        print(f"Error saving sheet: {e}")

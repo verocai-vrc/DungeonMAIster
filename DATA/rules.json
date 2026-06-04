@@ -1,164 +1,164 @@
 {
     "races": {
-        "Humano": [
-            "+1 em todos os Atributos",
-            "Deslocamento 9m"
+        "Human": [
+            "+1 to all Ability Scores",
+            "Speed 30 ft."
         ],
-        "Elfo": [
-            "Visão no Escuro",
-            "Ancestralidade Feérica",
-            "Transe"
+        "Elf": [
+            "Darkvision",
+            "Fey Ancestry",
+            "Trance"
         ],
-        "Anão": [
-            "Visão no Escuro",
-            "Resiliência Anã",
-            "Treinamento Anão"
+        "Dwarf": [
+            "Darkvision",
+            "Dwarven Resilience",
+            "Dwarven Combat Training"
         ],
         "Halfling": [
-            "Sorte",
-            "Bravura",
-            "Agilidade Halfling"
+            "Lucky",
+            "Brave",
+            "Halfling Nimbleness"
         ]
     },
     "classes": {
-        "Bárbaro": {
+        "Barbarian": {
             "hit_dice": 12,
             "features": {
                 "1": [
-                    "Fúria",
-                    "Defesa sem Armadura"
+                    "Rage",
+                    "Unarmored Defense"
                 ],
                 "2": [
-                    "Ataque Temerário",
-                    "Sentido de Perigo"
+                    "Reckless Attack",
+                    "Danger Sense"
                 ],
                 "3": [
-                    "Caminho Primitivo"
+                    "Primal Path"
                 ]
             }
         },
-        "Guerreiro": {
+        "Fighter": {
             "hit_dice": 10,
             "features": {
                 "1": [
-                    "Estilo de Luta",
-                    "Retomar o Fôlego"
+                    "Fighting Style",
+                    "Second Wind"
                 ],
                 "2": [
-                    "Surto de Ação"
+                    "Action Surge"
                 ],
                 "3": [
-                    "Arquétipo Marcial"
+                    "Martial Archetype"
                 ]
             }
         },
-        "Ladino": {
+        "Rogue": {
             "hit_dice": 8,
             "features": {
                 "1": [
-                    "Ataque Furtivo",
-                    "Gíria de Ladrão",
-                    "Especialização"
+                    "Sneak Attack",
+                    "Thieves' Cant",
+                    "Expertise"
                 ],
                 "2": [
-                    "Ação Astuta"
+                    "Cunning Action"
                 ],
                 "3": [
-                    "Arquétipo Rogino"
+                    "Roguish Archetype"
                 ]
             }
         },
-        "Mago": {
+        "Wizard": {
             "hit_dice": 6,
             "features": {
                 "1": [
-                    "Conjuração",
-                    "Recuperação Arcana"
+                    "Spellcasting",
+                    "Arcane Recovery"
                 ],
                 "2": [
-                    "Tradição Arcana"
+                    "Arcane Tradition"
                 ],
                 "3": [
-                    "Truques Adicionais"
+                    "Additional Cantrips"
                 ]
             }
         },
-        "Clérigo": {
+        "Cleric": {
             "hit_dice": 8,
             "features": {
                 "1": [
-                    "Conjuração",
-                    "Domínio Divino"
+                    "Spellcasting",
+                    "Divine Domain"
                 ],
                 "2": [
-                    "Canalizar Divindade (1/descanso)"
+                    "Channel Divinity (1/rest)"
                 ],
                 "3": [
-                    "Magias de Domínio"
+                    "Domain Spells"
                 ]
             }
         }
     },
     "spells": {
         "1": [
-            "Mísseis Mágicos",
-            "Curar Ferimentos",
-            "Escudo Arcano"
+            "Magic Missile",
+            "Cure Wounds",
+            "Shield"
         ],
         "2": [
-            "Passo Nebuloso",
-            "Arma Espiritual"
+            "Misty Step",
+            "Spiritual Weapon"
         ]
     },
     "equipment": [
-        "Adaga",
-        "Arco Curto",
-        "Arco Longo",
-        "Besta Leve",
-        "Besta Pesada",
-        "Espada Curta",
-        "Espada Longa",
-        "Machado de Batalha",
-        "Machado Grande",
-        "Maça",
-        "Martelo de Guerra",
-        "Rapieira",
-        "Armadura de Couro",
-        "Cota de Malha",
-        "Brunea",
-        "Placas",
-        "Escudo",
-        "Poção de Cura",
-        "Corda (15m)",
-        "Tocha",
-        "Mochila do Aventureiro",
-        "Rações (1 dia)"
+        "Dagger",
+        "Shortbow",
+        "Longbow",
+        "Light Crossbow",
+        "Heavy Crossbow",
+        "Shortsword",
+        "Longsword",
+        "Battleaxe",
+        "Greataxe",
+        "Mace",
+        "Warhammer",
+        "Rapier",
+        "Leather Armor",
+        "Chain Mail",
+        "Scale Mail",
+        "Plate Armor",
+        "Shield",
+        "Potion of Healing",
+        "Rope (50 ft.)",
+        "Torch",
+        "Explorer's Pack",
+        "Rations (1 day)"
     ],
     "descriptions": {
-        "Machado Grande": "Machado de um lenhador qualquer... ou de um guerreiro furioso. 1d12 de dano cortante. Pesado, duas mãos.",
-        "Adaga": "Arma corpo-a-corpo simples. 1d4 de dano perfurante. Acuidade, leve, arremesso (distância 6/18m).",
-        "Fúria": "Em batalha, você luta com ferocidade primitiva. No seu turno, você pode entrar em fúria como uma ação bônus, ganhando vantagem em Força e resistência a dano físico.",
-        "Mísseis Mágicos": "Crias três dardos mágicos brilhantes. Cada dardo atinge uma criatura e causa 1d4+1 de dano de energia.",
-        "Poção de Cura": "Um personagem que beber o líquido vermelho deste frasco recupera 2d4+2 pontos de vida."
+        "Greataxe": "The axe of some lumberjack... or of a furious warrior. 1d12 slashing damage. Heavy, two-handed.",
+        "Dagger": "Simple melee weapon. 1d4 piercing damage. Finesse, light, thrown (range 20/60 ft.).",
+        "Rage": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action, gaining advantage on Strength and resistance to physical damage.",
+        "Magic Missile": "You create three glowing magical darts. Each dart hits a creature and deals 1d4+1 force damage.",
+        "Potion of Healing": "A character who drinks the red liquid in this vial regains 2d4+2 hit points."
     },
     "armor": {
-        "Armadura de Couro": {
+        "Leather Armor": {
             "type": "light",
             "base": 11
         },
-        "Brunea": {
+        "Scale Mail": {
             "type": "medium",
             "base": 14
         },
-        "Cota de Malha": {
+        "Chain Mail": {
             "type": "heavy",
             "base": 16
         },
-        "Placas": {
+        "Plate Armor": {
             "type": "heavy",
             "base": 18
         },
-        "Escudo": {
+        "Shield": {
             "type": "shield",
             "bonus": 2
         }

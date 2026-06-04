@@ -22,8 +22,8 @@ _HEADER_SPLITS = [("#", "h1"), ("##", "h2"), ("###", "h3"), ("####", "h4")]
 
 def _split_markdown(markdown_text: str, source: str, doc_type: str) -> list:
     """
-    Divide Markdown primeiro por cabeçalhos (preserva o contexto de cada secção),
-    depois quebra secções demasiado grandes para não exceder a janela de embedding.
+    Splits Markdown first by headers (preserving the context of each section),
+    then breaks up overly large sections so they don't exceed the embedding window.
     """
     header_splitter = MarkdownHeaderTextSplitter(
         headers_to_split_on=_HEADER_SPLITS,
@@ -45,28 +45,28 @@ def _split_markdown(markdown_text: str, source: str, doc_type: str) -> list:
 
 
 # ---------------------------------------------------------------------------
-# Módulos de campanha (PDF → Markdown → chunks)
+# Campaign modules (PDF → Markdown → chunks)
 # ---------------------------------------------------------------------------
 def pdf_to_markdown(pdf_path: str) -> str:
-    """Converte um PDF para Markdown limpo usando MarkItDown."""
+    """Converts a PDF to clean Markdown using MarkItDown."""
     return MarkItDown().convert(pdf_path).text_content
 
 
 def ingest_single_pdf(pdf_path: str, vector_store: Chroma) -> int:
-    """Converte um PDF e adiciona os seus chunks ao ChromaDB. Retorna o nº de chunks."""
-    print(f"  [MarkItDown] A converter '{os.path.basename(pdf_path)}' para Markdown...")
+    """Converts a PDF and adds its chunks to ChromaDB. Returns the number of chunks."""
+    print(f"  [MarkItDown] Converting '{os.path.basename(pdf_path)}' to Markdown...")
     markdown_text = pdf_to_markdown(pdf_path)
 
-    print("  [Splitter]   A dividir por cabeçalhos e tamanho...")
+    print("  [Splitter]   Splitting by headers and size...")
     chunks = _split_markdown(markdown_text, source=os.path.basename(pdf_path), doc_type="module")
 
-    print(f"  [Chroma]     A guardar {len(chunks)} chunks na base de dados...")
+    print(f"  [Chroma]     Storing {len(chunks)} chunks in the database...")
     vector_store.add_documents(chunks)
     return len(chunks)
 
 
 # ---------------------------------------------------------------------------
-# Regras hardcoded (JSON → Markdown → chunks), idempotente entre arranques
+# Hardcoded rules (JSON → Markdown → chunks), idempotent across startups
 # ---------------------------------------------------------------------------
 def _rules_hash(md_files: list[Path]) -> str:
     h = hashlib.sha256()
@@ -77,15 +77,15 @@ def _rules_hash(md_files: list[Path]) -> str:
 
 def ingest_rules_md(vector_store: Chroma, force: bool = False) -> int:
     """
-    Gera o Markdown das regras a partir do JSON e ingere-o no RAG.
-    Substitui (não duplica) os chunks de regras anteriores e salta o trabalho
-    se nada mudou desde o último arranque.
+    Generates the rules Markdown from the JSON and ingests it into the RAG.
+    Replaces (does not duplicate) the previous rules chunks and skips the work
+    if nothing changed since the last startup.
     """
     build_all_rules_md()
 
     md_files = sorted(Path(RULES_MD_DIR).glob("*.md"))
     if not md_files:
-        print("  [Regras] Nenhum Markdown de regras encontrado.")
+        print("  [Rules] No rules Markdown found.")
         return 0
 
     digest = _rules_hash(md_files)
@@ -93,14 +93,14 @@ def ingest_rules_md(vector_store: Chroma, force: bool = False) -> int:
     if not force and os.path.exists(hash_file):
         with open(hash_file, "r", encoding="utf-8") as f:
             if f.read().strip() == digest:
-                print("  [Regras] Inalteradas desde a última ingestão — a saltar.")
+                print("  [Rules] Unchanged since last ingestion — skipping.")
                 return 0
 
-    # Remove os chunks de regras antigos antes de reinserir (evita duplicados)
+    # Remove the old rules chunks before reinserting (avoids duplicates)
     try:
         vector_store._collection.delete(where={"doc_type": "rules"})
     except Exception as e:
-        print(f"  [Regras] Aviso ao limpar regras antigas: {e}")
+        print(f"  [Rules] Warning while clearing old rules: {e}")
 
     total = 0
     for path in md_files:
@@ -113,12 +113,12 @@ def ingest_rules_md(vector_store: Chroma, force: bool = False) -> int:
     with open(hash_file, "w", encoding="utf-8") as f:
         f.write(digest)
 
-    print(f"  [Regras] {total} chunks de regras ingeridos.")
+    print(f"  [Rules] {total} rules chunks ingested.")
     return total
 
 
 # ---------------------------------------------------------------------------
-# Módulos PDF com persistência (manifest-based, idempotente entre arranques)
+# Persistent PDF modules (manifest-based, idempotent across startups)
 # ---------------------------------------------------------------------------
 _MANIFEST_FILE = os.path.join(DB_DIR, ".modules_manifest")
 
@@ -145,7 +145,7 @@ def _save_manifest(manifest: dict) -> None:
 
 
 def register_pdf_in_manifest(pdf_path: str) -> None:
-    """Regista um PDF no manifesto após ingestão bem-sucedida."""
+    """Registers a PDF in the manifest after successful ingestion."""
     manifest = _load_manifest()
     manifest[os.path.basename(pdf_path)] = _pdf_hash(pdf_path)
     _save_manifest(manifest)
@@ -153,8 +153,8 @@ def register_pdf_in_manifest(pdf_path: str) -> None:
 
 def ingest_pending_pdfs(vector_store: Chroma) -> int:
     """
-    Ingere automaticamente qualquer PDF em PDF_DIR que ainda não esteja no manifesto
-    (ou cujo hash tenha mudado). Chamado no arranque para garantir persistência.
+    Automatically ingests any PDF in PDF_DIR that is not yet in the manifest
+    (or whose hash has changed). Called at startup to ensure persistence.
     """
     manifest = _load_manifest()
     pdf_files = sorted(Path(PDF_DIR).glob("*.pdf"))
@@ -166,42 +166,42 @@ def ingest_pending_pdfs(vector_store: Chroma) -> int:
         name = pdf_path.name
         digest = _pdf_hash(str(pdf_path))
         if manifest.get(name) == digest:
-            print(f"  [Módulos] '{name}' já ingerido — a saltar.")
+            print(f"  [Modules] '{name}' already ingested — skipping.")
             continue
-        print(f"  [Módulos] A ingerir '{name}'...")
+        print(f"  [Modules] Ingesting '{name}'...")
         total += ingest_single_pdf(str(pdf_path), vector_store)
         manifest[name] = digest
 
     if total:
         _save_manifest(manifest)
-        print(f"  [Módulos] {total} chunks de módulos adicionados.")
+        print(f"  [Modules] {total} module chunks added.")
     return total
 
 
 # ---------------------------------------------------------------------------
-# Ingestão em lote (uso standalone)
+# Batch ingestion (standalone use)
 # ---------------------------------------------------------------------------
 def ingest_pdfs():
-    """Ingere todos os PDFs em PDF_DIR + as regras hardcoded. Para uso por script."""
-    print("A inicializar o modelo de embeddings local...")
+    """Ingests every PDF in PDF_DIR + the hardcoded rules. For script use."""
+    print("Initializing the local embeddings model...")
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_store = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
 
-    print("\n=== Regras hardcoded (JSON → Markdown) ===")
+    print("\n=== Hardcoded rules (JSON → Markdown) ===")
     ingest_rules_md(vector_store, force=True)
 
-    print("\n=== Módulos de campanha (PDF) ===")
+    print("\n=== Campaign modules (PDF) ===")
     pdf_files = list(Path(PDF_DIR).glob("*.pdf"))
     if not pdf_files:
-        print(f"Nenhum PDF encontrado em: {PDF_DIR}")
+        print(f"No PDF found in: {PDF_DIR}")
     else:
         total = 0
         for pdf_path in pdf_files:
-            print(f"\nA processar: {pdf_path.name}")
+            print(f"\nProcessing: {pdf_path.name}")
             total += ingest_single_pdf(str(pdf_path), vector_store)
-        print(f"\n{total} chunks de módulos guardados.")
+        print(f"\n{total} module chunks stored.")
 
-    print(f"\nIngestão concluída! Base de dados em {DB_DIR}")
+    print(f"\nIngestion complete! Database at {DB_DIR}")
 
 
 if __name__ == "__main__":

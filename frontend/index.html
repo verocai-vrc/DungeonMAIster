@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DungeonMAIster — Grimório do Aventureiro</title>
+    <title>DungeonMAIster — Adventurer's Grimoire</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,9 +11,9 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Repinta a paleta inteira do Tailwind em tons de grimório.
-        // Como o main.js injeta classes utilitárias (gray-/blue-/purple-/red-…),
-        // redefinir as escalas faz toda a UI dinâmica herdar a estética — sem tocar no JS.
+        // Repaint Tailwind's entire palette in grimoire tones.
+        // Since main.js injects utility classes (gray-/blue-/purple-/red-…),
+        // redefining the scales makes the whole dynamic UI inherit the aesthetic — without touching the JS.
         tailwind.config = {
             theme: {
                 extend: {
@@ -63,7 +63,7 @@
                 radial-gradient(ellipse 120% 120% at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 100%);
         }
 
-        /* Grão de pergaminho — sobreposto a tudo, mas atravessável ao clique */
+        /* Parchment grain — overlaid on everything, but click-through */
         body::after{
             content:""; position:fixed; inset:0; z-index:30; pointer-events:none;
             opacity:0.045; mix-blend-mode:overlay;
@@ -77,14 +77,14 @@
         ::-webkit-scrollbar-thumb { background: linear-gradient(var(--brass), #2a2014); border-radius: 6px; border:1px solid rgba(217,164,65,0.15); }
         ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-        /* ---------- Tipografia ---------- */
+        /* ---------- Typography ---------- */
         h1,h2,h3,h4{ font-family:'Cinzel', serif; letter-spacing:0.04em; }
         .wordmark{ font-family:'Uncial Antiqua', 'Cinzel Decorative', serif; }
         .runic{ font-family:'Cinzel', serif; letter-spacing:0.22em; text-transform:uppercase; }
 
         .gold-text{ color:var(--gold-lt); text-shadow:0 0 14px rgba(217,164,65,0.35); }
 
-        /* ---------- Painéis de couro com cantos em filigrana ---------- */
+        /* ---------- Leather panels with filigree corners ---------- */
         .leather{
             background:
                 linear-gradient(180deg, rgba(255,230,170,0.025), transparent 30%),
@@ -99,7 +99,7 @@
         .ornate::before{ top:7px; left:9px; transform:scaleX(-1); }
         .ornate::after{ top:7px; right:9px; }
 
-        /* Régua ornamental */
+        /* Ornamental divider */
         .rule{ display:flex; align-items:center; gap:0.6rem; color:var(--faded); }
         .rule::before, .rule::after{
             content:""; flex:1; height:1px;
@@ -107,24 +107,24 @@
         }
         .rule span{ font-size:0.6rem; }
 
-        /* ---------- Abas (active state vem do switchTab → .text-blue-400) ---------- */
+        /* ---------- Tabs (active state comes from switchTab → .text-blue-400) ---------- */
         .tab-btn{ position:relative; font-family:'Cinzel', serif; letter-spacing:0.06em; transition:color .25s, background .25s; }
         .tab-btn:hover{ background:rgba(217,164,65,0.06); color:var(--gold-pale); }
         .tab-btn.text-blue-400{ text-shadow:0 0 12px rgba(217,164,65,0.5); }
         .tab-btn.border-blue-500{ box-shadow:0 6px 14px -8px rgba(217,164,65,0.8); }
 
-        /* ---------- Mensagens do chat (innerHTML do main.js) ---------- */
+        /* ---------- Chat messages (innerHTML from main.js) ---------- */
         #chat-history > div{
             font-size:1.06rem; line-height:1.6; position:relative;
             box-shadow:0 10px 26px -16px rgba(0,0,0,0.9);
             animation: rise .5s cubic-bezier(.2,.7,.3,1) both;
         }
-        /* Rótulo do locutor → versalete dourado */
+        /* Speaker label → golden small-caps */
         #chat-history .font-bold.text-xs{
             font-family:'Cinzel', serif !important; letter-spacing:0.16em;
             text-transform:uppercase; opacity:1 !important; font-size:0.62rem !important;
         }
-        /* Narração do Mestre (self-start, não system) ganha capitular sutil + filete */
+        /* Game Master narration (self-start, not system) gets a subtle drop cap + rule */
         #chat-history > div:not(.self-end):not(.self-center){
             border-left:2px solid rgba(217,164,65,0.45) !important;
         }
@@ -133,7 +133,7 @@
         input, select, textarea{ font-family:'EB Garamond', serif; }
         input:focus, select:focus{ box-shadow:0 0 0 2px rgba(217,164,65,0.35), 0 0 18px -4px rgba(217,164,65,0.4) !important; }
 
-        /* ---------- Botões com brilho de brasa ---------- */
+        /* ---------- Buttons with an ember glow ---------- */
         .ember-btn{ position:relative; overflow:hidden; font-family:'Cinzel', serif; letter-spacing:0.05em; }
         .ember-btn::after{
             content:""; position:absolute; inset:0; transform:translateX(-120%);
@@ -142,16 +142,16 @@
         }
         .ember-btn:hover::after{ transform:translateX(120%); }
 
-        /* ---------- Cartão de identidade com moldura dupla ---------- */
+        /* ---------- Identity card with a double frame ---------- */
         .framed{
             border:1px solid var(--brass);
             box-shadow:inset 0 0 0 1px rgba(217,164,65,0.12), inset 0 0 30px rgba(0,0,0,0.4);
         }
 
-        /* ---------- Tooltips de itens/magias ---------- */
+        /* ---------- Item/spell tooltips ---------- */
         #chat-history, .tip-host { isolation:isolate; }
 
-        /* ---------- Animações ---------- */
+        /* ---------- Animations ---------- */
         @keyframes rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes fadeDown{ from{ opacity:0; transform:translateY(-10px); } to{ opacity:1; transform:translateY(0); } }
         @keyframes wash{ from{ opacity:0; transform:translateY(22px) scale(.995); } to{ opacity:1; transform:translateY(0) scale(1); } }
@@ -170,85 +170,85 @@
 </head>
 <body class="bg-gray-950 text-gray-100 h-screen flex overflow-hidden font-sans">
 
-    <!-- ===================== PAINEL ESQUERDO: A CRÔNICA (CHAT) ===================== -->
+    <!-- ===================== LEFT PANEL: THE CHRONICLE (CHAT) ===================== -->
     <div class="col-left w-[62%] flex flex-col border-r-2 border-gray-700 relative">
-        <!-- Cabeçalho -->
+        <!-- Header -->
         <div class="leather px-6 py-4 border-b-2 border-gray-700 flex justify-between items-end reveal-1">
             <div>
-                <div class="runic text-[0.58rem] text-gray-500 mb-1">Crônica viva · Sessão em curso</div>
-                <h1 class="text-2xl gold-text candle">O Mundo</h1>
+                <div class="runic text-[0.58rem] text-gray-500 mb-1">Living chronicle · Session in progress</div>
+                <h1 class="text-2xl gold-text candle">The World</h1>
             </div>
-            <span id="ws-status" class="runic text-[0.62rem] text-red-400 border border-red-800 px-3 py-1 rounded-sm">Desconectado</span>
+            <span id="ws-status" class="runic text-[0.62rem] text-red-400 border border-red-800 px-3 py-1 rounded-sm">Disconnected</span>
         </div>
 
-        <!-- Histórico -->
+        <!-- History -->
         <div id="chat-history" class="flex-1 overflow-y-auto px-7 py-6 space-y-5 flex flex-col tip-host"
              style="background:
                 radial-gradient(circle at 50% -10%, rgba(217,164,65,0.05), transparent 45%),
                 var(--ink-deep);">
             <div class="self-center my-8 max-w-md text-center">
                 <div class="text-3xl gold-text opacity-70 mb-3">⁂</div>
-                <p class="italic text-gray-400 text-lg leading-relaxed">Aqui começa a tua lenda. Acende a conexão na aba <span class="text-blue-400">Sistema</span> e que o Mestre desperte…</p>
+                <p class="italic text-gray-400 text-lg leading-relaxed">Here your legend begins. Light the connection in the <span class="text-blue-400">System</span> tab and let the Game Master awaken…</p>
             </div>
         </div>
 
-        <!-- Entrada de ação -->
+        <!-- Action input -->
         <div class="leather px-6 py-4 border-t-2 border-gray-700 reveal-2">
-            <div class="rule mb-3"><span class="runic">Declara a tua ação</span></div>
+            <div class="rule mb-3"><span class="runic">Declare your action</span></div>
             <div class="flex gap-3">
                 <input type="text" id="chat-input"
                     class="flex-1 bg-gray-950 text-gray-100 px-4 py-3 rounded-sm border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-lg"
-                    placeholder="Empunho a tocha e avanço pela cripta…" onkeypress="handleKeyPress(event)">
+                    placeholder="I raise the torch and advance into the crypt…" onkeypress="handleKeyPress(event)">
                 <button onclick="sendMessage()"
-                    class="ember-btn bg-blue-600 hover:bg-blue-500 text-gray-950 px-7 py-3 rounded-sm font-bold uppercase tracking-wider shadow-lg">Selar</button>
+                    class="ember-btn bg-blue-600 hover:bg-blue-500 text-gray-950 px-7 py-3 rounded-sm font-bold uppercase tracking-wider shadow-lg">Seal</button>
             </div>
         </div>
     </div>
 
-    <!-- ===================== PAINEL DIREITO: O GRIMÓRIO (FICHA) ===================== -->
+    <!-- ===================== RIGHT PANEL: THE GRIMOIRE (SHEET) ===================== -->
     <div class="col-right w-[38%] flex flex-col bg-gray-900 relative">
 
-        <!-- Banner de Combate (mostrado pelo main.js quando in_combat) -->
+        <!-- Combat banner (shown by main.js when in_combat) -->
         <div id="char-actions" class="hidden bg-red-900/40 border-b-2 border-red-800 px-5 py-3">
-            <h3 class="runic text-[0.6rem] text-red-400 mb-2 flex items-center gap-2"><span class="candle">⚔</span> Economia de Ação · Turno</h3>
+            <h3 class="runic text-[0.6rem] text-red-400 mb-2 flex items-center gap-2"><span class="candle">⚔</span> Action Economy · Turn</h3>
             <div class="flex gap-2 text-center text-xs">
-                <div id="act-main"  class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Principal</div>
-                <div id="act-bonus" class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Bônus</div>
-                <div id="act-react" class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Reação</div>
+                <div id="act-main"  class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Action</div>
+                <div id="act-bonus" class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Bonus</div>
+                <div id="act-react" class="flex-1 bg-green-700 text-gray-100 py-2 rounded-sm runic">Reaction</div>
             </div>
         </div>
 
-        <!-- Marca + Abas -->
+        <!-- Wordmark + Tabs -->
         <div class="leather border-b-2 border-gray-700">
             <div class="px-5 pt-4 pb-3 text-center">
                 <div class="wordmark text-xl gold-text leading-none">DungeonMAIster</div>
-                <div class="runic text-[0.5rem] text-gray-500 mt-1">Grimório do Aventureiro</div>
+                <div class="runic text-[0.5rem] text-gray-500 mt-1">Adventurer's Grimoire</div>
             </div>
             <div class="flex">
-                <button onclick="switchTab('sheet')"     id="btn-sheet"     class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-blue-500 text-blue-400">Ficha</button>
-                <button onclick="switchTab('inventory')" id="btn-inventory" class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Tesouro</button>
-                <button onclick="switchTab('abilities')" id="btn-abilities" class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Dons</button>
-                <button onclick="switchTab('system')"    id="btn-system"    class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Sistema</button>
+                <button onclick="switchTab('sheet')"     id="btn-sheet"     class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-blue-500 text-blue-400">Sheet</button>
+                <button onclick="switchTab('inventory')" id="btn-inventory" class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Treasure</button>
+                <button onclick="switchTab('abilities')" id="btn-abilities" class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">Boons</button>
+                <button onclick="switchTab('system')"    id="btn-system"    class="tab-btn flex-1 py-3 text-center text-sm focus:outline-none border-b-2 border-transparent text-gray-400">System</button>
             </div>
         </div>
 
-        <!-- Conteúdo das abas -->
+        <!-- Tab content -->
         <div class="flex-1 overflow-y-auto p-5"
              style="background:radial-gradient(circle at 100% 0%, rgba(125,90,168,0.06), transparent 40%);">
 
-            <!-- ===== ABA: FICHA ===== -->
+            <!-- ===== TAB: SHEET ===== -->
             <div id="tab-sheet" class="space-y-6">
                 <div class="flex gap-3">
-                    <button onclick="openEditModal(false)" class="ember-btn flex-1 bg-blue-600 hover:bg-blue-500 text-gray-950 py-2.5 rounded-sm text-sm font-bold uppercase tracking-wider shadow">Editar</button>
-                    <button onclick="openEditModal(true)"  class="ember-btn flex-1 bg-emerald-600 hover:bg-emerald-700 text-gray-100 py-2.5 rounded-sm text-sm font-bold uppercase tracking-wider shadow">Forjar Novo</button>
+                    <button onclick="openEditModal(false)" class="ember-btn flex-1 bg-blue-600 hover:bg-blue-500 text-gray-950 py-2.5 rounded-sm text-sm font-bold uppercase tracking-wider shadow">Edit</button>
+                    <button onclick="openEditModal(true)"  class="ember-btn flex-1 bg-emerald-600 hover:bg-emerald-700 text-gray-100 py-2.5 rounded-sm text-sm font-bold uppercase tracking-wider shadow">Forge New</button>
                 </div>
 
-                <!-- Identidade -->
+                <!-- Identity -->
                 <div class="leather framed ornate p-5 pt-7 rounded-sm text-center">
-                    <h2 class="text-2xl gold-text" id="char-name">Desconhecido</h2>
+                    <h2 class="text-2xl gold-text" id="char-name">Unknown</h2>
                     <p class="text-sm text-gray-300 mt-2">
                         <span id="char-race">—</span> · <span id="char-class">—</span> ·
-                        Nível <span class="text-blue-400 font-semibold" id="char-level">—</span>
+                        Level <span class="text-blue-400 font-semibold" id="char-level">—</span>
                         <span class="text-gray-500">(<span id="char-xp">—</span> XP)</span>
                     </p>
                     <p class="text-sm text-gray-400 mt-2 flex items-center justify-center gap-1">
@@ -256,119 +256,119 @@
                     </p>
                 </div>
 
-                <!-- Vitalidade -->
+                <!-- Vitals -->
                 <div class="flex gap-4 text-center">
                     <div class="flex-1 bg-red-900/30 border border-red-800/50 p-4 rounded-sm framed">
-                        <div class="runic text-[0.55rem] text-red-400">Pontos de Vida</div>
+                        <div class="runic text-[0.55rem] text-red-400">Hit Points</div>
                         <div class="text-3xl font-display font-bold mt-1 text-gray-100" id="char-hp">— / —</div>
                     </div>
                     <div class="flex-1 bg-blue-900/30 border border-blue-800/50 p-4 rounded-sm framed">
-                        <div class="runic text-[0.55rem] text-blue-400">Classe de Armadura</div>
+                        <div class="runic text-[0.55rem] text-blue-400">Armor Class</div>
                         <div class="text-3xl font-display font-bold mt-1 text-gray-100" id="char-ac">—</div>
                     </div>
                 </div>
 
-                <!-- Atributos -->
+                <!-- Attributes -->
                 <div>
-                    <div class="rule mb-4"><span class="runic">Atributos</span></div>
+                    <div class="rule mb-4"><span class="runic">Attributes</span></div>
                     <div class="grid grid-cols-2 gap-3" id="char-attributes">
-                        <div class="text-gray-500 italic text-sm col-span-2 text-center">Carrega a tua ficha na aba Sistema.</div>
+                        <div class="text-gray-500 italic text-sm col-span-2 text-center">Load your sheet in the System tab.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== ABA: INVENTÁRIO ===== -->
+            <!-- ===== TAB: INVENTORY ===== -->
             <div id="tab-inventory" class="hidden space-y-4 tip-host">
-                <div class="rule mb-2"><span class="runic">Tesouro & Equipamento</span></div>
+                <div class="rule mb-2"><span class="runic">Treasure & Equipment</span></div>
                 <ul id="char-inventory" class="space-y-2 text-gray-200 leather p-4 rounded-sm framed">
-                    <li class="text-gray-500 italic text-sm list-none">As tuas algibeiras estão vazias.</li>
+                    <li class="text-gray-500 italic text-sm list-none">Your pockets are empty.</li>
                 </ul>
             </div>
 
-            <!-- ===== ABA: HABILIDADES ===== -->
+            <!-- ===== TAB: ABILITIES ===== -->
             <div id="tab-abilities" class="hidden space-y-6 tip-host">
                 <div>
-                    <div class="rule mb-4"><span class="runic">Recursos & Conjurações</span></div>
+                    <div class="rule mb-4"><span class="runic">Resources & Spellcasting</span></div>
                     <div id="char-resources" class="grid grid-cols-2 gap-2 mb-3"></div>
                     <div id="char-spellslots" class="grid grid-cols-2 gap-2"></div>
                 </div>
 
                 <div>
-                    <div class="rule mb-4"><span class="runic">Traços de Classe & Linhagem</span></div>
+                    <div class="rule mb-4"><span class="runic">Class & Lineage Traits</span></div>
                     <ul id="char-features" class="space-y-1 text-sm text-gray-300 leather p-4 rounded-sm framed">
-                        <li class="text-gray-500 italic list-none">Nenhum traço registado.</li>
+                        <li class="text-gray-500 italic list-none">No traits recorded.</li>
                     </ul>
                 </div>
 
                 <div>
-                    <div class="rule mb-4"><span class="runic">Magias Memorizadas</span></div>
+                    <div class="rule mb-4"><span class="runic">Prepared Spells</span></div>
                     <div id="spells-container" class="space-y-4">
-                        <div class="text-gray-500 italic text-sm">A folhear o grimório…</div>
+                        <div class="text-gray-500 italic text-sm">Leafing through the grimoire…</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== ABA: SISTEMA ===== -->
+            <!-- ===== TAB: SYSTEM ===== -->
             <div id="tab-system" class="hidden space-y-4">
-                <div class="rule mb-2"><span class="runic">Rituais de Conexão</span></div>
+                <div class="rule mb-2"><span class="runic">Connection Rituals</span></div>
                 <button onclick="connectWS()" class="ember-btn w-full bg-green-600 hover:bg-green-700 text-gray-100 px-4 py-3.5 rounded-sm font-semibold tracking-wide shadow text-left flex justify-between items-center">
-                    <span>I · Despertar o Mestre IA</span> <span class="text-lg candle">🔥</span>
+                    <span>I · Awaken the AI Game Master</span> <span class="text-lg candle">🔥</span>
                 </button>
                 <button onclick="loadCharacter()" class="ember-btn w-full bg-purple-600 hover:bg-purple-800 text-gray-100 px-4 py-3.5 rounded-sm font-semibold tracking-wide shadow text-left flex justify-between items-center">
-                    <span>II · Invocar a Ficha</span> <span class="text-lg">📜</span>
+                    <span>II · Summon the Character Sheet</span> <span class="text-lg">📜</span>
                 </button>
 
-                <div class="rule mb-2 mt-7"><span class="runic">Tomos da Campanha</span></div>
+                <div class="rule mb-2 mt-7"><span class="runic">Campaign Tomes</span></div>
                 <input type="file" id="module-upload" accept="application/pdf" class="hidden" onchange="uploadModule(event)">
                 <button onclick="document.getElementById('module-upload').click()" class="ember-btn w-full bg-orange-600 hover:bg-orange-700 text-gray-100 px-4 py-3.5 rounded-sm font-semibold tracking-wide shadow text-left flex justify-between items-center">
-                    <span>III · Memorizar Módulo (PDF)</span> <span class="text-lg">📖</span>
+                    <span>III · Memorize Module (PDF)</span> <span class="text-lg">📖</span>
                 </button>
             </div>
 
         </div>
     </div>
 
-    <!-- ===================== MODAL: FORJAR / EDITAR FICHA ===================== -->
+    <!-- ===================== MODAL: FORGE / EDIT SHEET ===================== -->
     <div id="char-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex justify-center items-center z-50 p-4">
         <div class="leather framed ornate p-6 pt-8 rounded-sm w-[26rem] max-h-[92vh] overflow-y-auto shadow-2xl border-2 border-gray-700">
-            <h2 class="text-2xl gold-text text-center mb-1" id="modal-title">Editar Ficha</h2>
-            <div class="rule mb-5"><span class="runic">Inscrição no Grimório</span></div>
+            <h2 class="text-2xl gold-text text-center mb-1" id="modal-title">Edit Sheet</h2>
+            <div class="rule mb-5"><span class="runic">Inscription in the Grimoire</span></div>
 
-            <!-- input fantasma exigido pelo openEditModal (id 'edit-inventory') -->
+            <!-- phantom input required by openEditModal (id 'edit-inventory') -->
             <input type="hidden" id="edit-inventory">
 
             <div class="space-y-3 text-sm">
-                <div><label class="runic text-[0.55rem] text-gray-400 block mb-1">Nome</label><input id="edit-name" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div><label class="runic text-[0.55rem] text-gray-400 block mb-1">Name</label><input id="edit-name" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 <div class="flex gap-2">
-                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Linhagem</label>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Lineage</label>
                         <select id="edit-race" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
                     </div>
-                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Classe</label>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Class</label>
                         <select id="edit-class" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
                     </div>
-                    <div class="w-16"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Nível</label><input type="number" id="edit-level" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="w-16"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Level</label><input type="number" id="edit-level" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                     <div class="w-20"><label class="runic text-[0.55rem] text-gray-400 block mb-1">XP</label><input type="number" id="edit-xp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 </div>
-                <div><label class="runic text-[0.55rem] text-gray-400 block mb-1">Localização</label><input id="edit-location" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div><label class="runic text-[0.55rem] text-gray-400 block mb-1">Location</label><input id="edit-location" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
 
                 <div class="flex gap-2 mt-4">
-                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">HP Máx</label><input type="number" id="edit-max-hp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">HP Atual</label><input type="number" id="edit-current-hp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">CA</label><input type="number" id="edit-ac" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Max HP</label><input type="number" id="edit-max-hp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Current HP</label><input type="number" id="edit-current-hp" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div class="flex-1"><label class="runic text-[0.55rem] text-gray-400 block mb-1">AC</label><input type="number" id="edit-ac" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 </div>
 
-                <div class="rule my-4"><span class="runic">Atributos</span></div>
+                <div class="rule my-4"><span class="runic">Attributes</span></div>
                 <div class="grid grid-cols-3 gap-2">
-                    <div><label class="runic text-[0.55rem] text-red-400 block mb-1">FOR</label><input type="number" id="edit-str" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="runic text-[0.55rem] text-green-400 block mb-1">DES</label><input type="number" id="edit-dex" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-red-400 block mb-1">STR</label><input type="number" id="edit-str" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-green-400 block mb-1">DEX</label><input type="number" id="edit-dex" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                     <div><label class="runic text-[0.55rem] text-orange-600 block mb-1">CON</label><input type="number" id="edit-con" onchange="updateAutoFeatures()" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                     <div><label class="runic text-[0.55rem] text-blue-400 block mb-1">INT</label><input type="number" id="edit-int" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="runic text-[0.55rem] text-indigo-700 block mb-1">SAB</label><input type="number" id="edit-wis" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
-                    <div><label class="runic text-[0.55rem] text-pink-700 block mb-1">CAR</label><input type="number" id="edit-cha" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-indigo-700 block mb-1">WIS</label><input type="number" id="edit-wis" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="runic text-[0.55rem] text-pink-700 block mb-1">CHA</label><input type="number" id="edit-cha" class="w-full bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
                 </div>
 
                 <div class="mt-5">
-                    <label class="runic text-[0.55rem] text-gray-400 block mb-1">Inventário</label>
+                    <label class="runic text-[0.55rem] text-gray-400 block mb-1">Inventory</label>
                     <ul id="edit-inventory-list" class="bg-gray-950 p-2 rounded-sm mb-2 space-y-1 text-gray-200 border border-gray-700 max-h-32 overflow-y-auto"></ul>
                     <div class="flex gap-2">
                         <select id="add-inventory-select" class="flex-1 bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
@@ -377,7 +377,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <label class="runic text-[0.55rem] text-gray-400 block mb-1">Magias & Conjurações</label>
+                    <label class="runic text-[0.55rem] text-gray-400 block mb-1">Spells & Spellcasting</label>
                     <ul id="edit-spells-list" class="bg-gray-950 p-2 rounded-sm mb-2 space-y-1 text-gray-200 border border-gray-700 max-h-32 overflow-y-auto"></ul>
                     <div class="flex gap-2">
                         <select id="add-spell-select" class="flex-1 bg-gray-950 text-gray-100 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></select>
@@ -385,12 +385,12 @@
                     </div>
                 </div>
 
-                <div class="mt-4"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Habilidades (auto / editável)</label><input id="edit-features" class="w-full bg-gray-950 text-gray-300 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
+                <div class="mt-4"><label class="runic text-[0.55rem] text-gray-400 block mb-1">Features (auto / editable)</label><input id="edit-features" class="w-full bg-gray-950 text-gray-300 px-3 py-2 rounded-sm border border-gray-600 focus:outline-none focus:border-blue-500"></div>
             </div>
 
             <div class="flex gap-3 mt-6">
-                <button onclick="saveCharacter()" class="ember-btn flex-1 bg-green-600 hover:bg-green-700 text-gray-100 py-2.5 rounded-sm font-bold uppercase tracking-wider shadow">Selar no Grimório</button>
-                <button onclick="closeEditModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-gray-100 py-2.5 rounded-sm font-bold uppercase tracking-wider shadow">Descartar</button>
+                <button onclick="saveCharacter()" class="ember-btn flex-1 bg-green-600 hover:bg-green-700 text-gray-100 py-2.5 rounded-sm font-bold uppercase tracking-wider shadow">Seal in the Grimoire</button>
+                <button onclick="closeEditModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-gray-100 py-2.5 rounded-sm font-bold uppercase tracking-wider shadow">Discard</button>
             </div>
         </div>
     </div>
