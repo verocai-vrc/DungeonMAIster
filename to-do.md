@@ -6,6 +6,17 @@
 - [] persistent campaign save feature to continue games
 = [] 
 
+## Issues found in testing:
+- The player can lie the dice results.
+- The AI dungeon master doesnt look at the players sheet, so he can be fooled if the player make something up (example: the DM asked for a d20 roll.i rolled 1d20+15 and he agreed that was my modifier and moved on)
+- Iniative rolling comes out of time just because the word fight appeared
+- the [RQUEST_ROLL] label appears to the player instead of the actual buttons and action text box (this happened after some rolls)
+- the DM is VEEEERY gullible and can be lied to
+- theres barely nothing comparable to a game turn. i can perform as many actions i want and the DM keeps asking me for more. Other caracters barely act
+- the AI gives me spells i dont have on the character sheet 
+- combat turn resource doesnt get spent when actions are done
+
+
 ### Phase 1: Foundation and Base Infrastructure
 - [ ] Set up the main backend server (FastAPI).
 - [ ] Establish real-time bidirectional communication (WebSockets) between client and server.

@@ -12,14 +12,19 @@ def start():
     # Determine the directories based on this script's location
     base_dir = os.path.abspath(os.path.dirname(__file__))
 
+    # Prefer the venv Python if one exists alongside this script
+    venv_python = os.path.join(base_dir, ".venv", "Scripts", "python.exe")
+    if not os.path.exists(venv_python):
+        venv_python = os.path.join(base_dir, ".venv", "bin", "python")
+    python_exe = venv_python if os.path.exists(venv_python) else sys.executable
+
     print("========================================")
     print(">>>  Starting DungeonMAIster...")
     print("========================================")
     print("Bringing up the backend server (FastAPI)...")
 
-    # Start Uvicorn using the current Python executable (keeps venv compatibility)
     server_process = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "backend.main:app", "--reload"],
+        [python_exe, "-m", "uvicorn", "backend.main:app", "--reload"],
         cwd=base_dir
     )
 
